@@ -330,7 +330,7 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-1 pb-1">
-      <div className="relative w-full max-w-4xl mx-1 h-full">
+      <div className="relative w-full max-w-md mx-1 h-full">
         <div className="modal-content rounded-2xl p-2 h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between mb-2 flex-shrink-0">

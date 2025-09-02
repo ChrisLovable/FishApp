@@ -257,7 +257,7 @@ const SecondHandStoreModal = ({ isOpen, onClose }: SecondHandStoreModalProps) =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-6xl mx-2 h-full">
+      <div className="relative w-full max-w-md mx-2 h-full">
         <div className="modal-content rounded-2xl p-3 h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between mb-3 flex-shrink-0">

@@ -563,7 +563,7 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-4xl mx-2 h-full">
+      <div className="relative w-full max-w-md mx-2 h-full">
         <div className="modal-content rounded-2xl p-6 h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between mb-6 flex-shrink-0">
@@ -584,18 +584,18 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
               {/* Points Summary */}
               <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-lg border border-yellow-500/50 p-6">
                 <h3 className="text-xl font-bold text-white mb-4">📊 Competition Summary</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div className="text-center">
                     <div className="text-yellow-200 font-semibold">Total Points</div>
-                    <div className="text-white text-3xl font-bold">{totalPoints.toFixed(2)}</div>
+                    <div className="text-white text-2xl font-bold">{totalPoints.toFixed(2)}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-yellow-200 font-semibold">Total Weight</div>
-                    <div className="text-white text-3xl font-bold">{totalWeight.toFixed(2)} kg</div>
+                    <div className="text-white text-2xl font-bold">{totalWeight.toFixed(2)} kg</div>
                   </div>
                   <div className="text-center">
                     <div className="text-yellow-200 font-semibold">Total Fish</div>
-                    <div className="text-white text-3xl font-bold">{totalFish}</div>
+                    <div className="text-white text-2xl font-bold">{totalFish}</div>
                   </div>
                 </div>
                 <div className="mt-4 text-center text-sm text-yellow-100">
@@ -629,7 +629,7 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
                       </button>
                     </div>
                   </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   {/* Species Selection */}
                   <div className="relative" ref={dropdownRef}>
                     <label className="block text-white text-sm font-semibold mb-2">
@@ -754,7 +754,7 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
                                 </span>
                               )}
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div className="grid grid-cols-1 gap-2 text-sm">
                               <div>
                                 <span className="text-gray-400">Length:</span>
                                 <span className="text-white ml-2 font-semibold">{fish.length} cm</span>

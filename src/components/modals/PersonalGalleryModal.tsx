@@ -185,7 +185,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay">
-      <div className="relative w-full max-w-4xl mx-4 max-h-screen">
+      <div className="relative w-full max-w-md mx-4 max-h-screen">
         <div className="modal-content rounded-2xl p-6 h-full flex flex-col overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">

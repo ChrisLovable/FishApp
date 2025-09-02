@@ -30,7 +30,7 @@ const EBookModal = ({ isOpen, onClose }: EBookModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay">
-      <div className="relative w-full h-full max-w-4xl mx-6">
+      <div className="relative w-full h-full max-w-md mx-2">
         <div className="modal-content rounded-2xl h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-600">
