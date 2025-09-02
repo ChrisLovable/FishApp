@@ -27,8 +27,8 @@ interface PersonalGalleryModalProps {
 const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) => {
   const [catches, setCatches] = useState<CatchEntry[]>([])
   const [species, setSpecies] = useState<Species[]>([])
-  const [view, setView] = useState<'gallery' | 'add'>('gallery')
-  const [isListening, setIsListening] = useState(false)
+  const [view, setView] = useState<'catches' | 'add'>('catches')
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Form state for new catch entry
@@ -100,9 +100,14 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Check file size (limit to 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Photo size must be less than 5MB')
+      // Check file type - support all common mobile gallery formats
+      const supportedTypes = [
+        'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 
+        'image/heic', 'image/heif', 'image/tiff', 'image/bmp'
+      ]
+      
+      if (!supportedTypes.includes(file.type.toLowerCase())) {
+        alert('Please select a valid image file (JPEG, PNG, WebP, HEIC, etc.)')
         return
       }
 
@@ -115,27 +120,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
     }
   }
 
-  // Speech recognition for place input
-  const startListening = (field: 'place' | 'bait' | 'conditions') => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
 
-      recognition.onstart = () => setIsListening(true)
-      recognition.onend = () => setIsListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        setFormData(prev => ({ ...prev, [field]: transcript }))
-      }
-
-      recognition.start()
-    }
-  }
 
   // Add new catch entry
   const addCatch = () => {
@@ -165,7 +150,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
       photo: ''
     })
     setSearchTerm('')
-    setView('gallery')
+    setView('catches')
   }
 
   // Delete catch entry
@@ -184,35 +169,36 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay">
-      <div className="relative w-full max-w-md mx-4 max-h-screen">
-        <div className="modal-content rounded-2xl p-6 h-full flex flex-col overflow-y-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">📱 Personal Gallery</h2>
-            <div className="flex items-center gap-4">
-              {view === 'gallery' && (
+    <div className="fixed inset-0 z-50 modal-overlay">
+      <div className="w-full h-full flex items-center justify-center p-4">
+        <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+          <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '800px'}}>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 flex-shrink-0">
+              <h2 className="text-2xl font-bold text-white">📱 Personal Catches</h2>
+              <div className="flex items-center gap-4">
+                {view === 'catches' && (
+                  <button
+                    onClick={() => setView('add')}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+                  >
+                    + Add Catch
+                  </button>
+                )}
                 <button
-                  onClick={() => setView('add')}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-white transition-colors p-2"
+                  aria-label="Close modal"
                 >
-                  + Add Catch
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
-              )}
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors p-2"
-                aria-label="Close modal"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              </div>
             </div>
-          </div>
 
-          <div className="flex-1">
-            {view === 'gallery' ? (
+            <div className="modal-scrollable">
+            {view === 'catches' ? (
               /* Gallery View */
               <div>
                 {catches.length === 0 ? (
@@ -232,12 +218,12 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                     {catches.map((catch_entry) => (
                       <div key={catch_entry.id} className="bg-gray-800/50 rounded-lg border border-gray-600 overflow-hidden">
                         {/* Photo */}
-                        <div className="aspect-square bg-gray-700 flex items-center justify-center">
+                        <div className="bg-gray-700 flex items-center justify-center" style={{minHeight: '200px'}}>
                           {catch_entry.photo ? (
                             <img
                               src={catch_entry.photo}
                               alt={`${catch_entry.species} catch`}
-                              className="w-full h-full object-cover"
+                              className="w-full h-auto max-h-64 object-contain rounded-t-lg"
                             />
                           ) : (
                             <div className="text-gray-400 text-4xl">📷</div>
@@ -285,10 +271,10 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold text-white">Add New Catch</h3>
                   <button
-                    onClick={() => setView('gallery')}
+                    onClick={() => setView('catches')}
                     className="text-blue-300 hover:text-white"
                   >
-                    ← Back to Gallery
+                    ← Back to Catches
                   </button>
                 </div>
 
@@ -304,7 +290,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                           <img
                             src={formData.photo}
                             alt="Selected catch"
-                            className="w-full max-h-64 object-contain rounded-lg"
+                            className="w-full h-auto max-h-64 object-contain rounded-lg"
                           />
                           <button
                             onClick={() => setFormData(prev => ({ ...prev, photo: '' }))}
@@ -322,17 +308,16 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                           >
                             Upload Photo
                           </button>
-                          <p className="text-sm text-gray-400 mt-2">Max 5MB</p>
+                                                     <p className="text-sm text-gray-400 mt-2">Select from gallery</p>
                         </div>
                       )}
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handlePhotoUpload}
-                        className="hidden"
-                        capture="environment"
-                      />
+                                             <input
+                         ref={fileInputRef}
+                         type="file"
+                         accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp"
+                         onChange={handlePhotoUpload}
+                         className="hidden"
+                       />
                     </div>
                   </div>
 
@@ -398,17 +383,9 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                           value={formData.place}
                           onChange={(e) => setFormData(prev => ({ ...prev, place: e.target.value }))}
                           placeholder="Fishing location..."
-                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none pr-12"
+                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                         />
-                        <button
-                          onClick={() => startListening('place')}
-                          className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                            isListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                          }`}
-                          title="Voice input"
-                        >
-                          🎤
-                        </button>
+
                       </div>
                     </div>
                   </div>
@@ -456,17 +433,9 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                         value={formData.bait}
                         onChange={(e) => setFormData(prev => ({ ...prev, bait: e.target.value }))}
                         placeholder="What bait did you use..."
-                        className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none pr-12"
+                        className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                       />
-                      <button
-                        onClick={() => startListening('bait')}
-                        className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                          isListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                        }`}
-                        title="Voice input"
-                      >
-                        🎤
-                      </button>
+
                     </div>
                   </div>
 
@@ -483,15 +452,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                         className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none resize-none"
                         rows={3}
                       />
-                      <button
-                        onClick={() => startListening('conditions')}
-                        className={`absolute right-3 top-3 p-1 rounded ${
-                          isListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                        }`}
-                        title="Voice input"
-                      >
-                        🎤
-                      </button>
+
                     </div>
                   </div>
 
@@ -504,7 +465,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                       Save Catch
                     </button>
                     <button
-                      onClick={() => setView('gallery')}
+                      onClick={() => setView('catches')}
                       className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors"
                     >
                       Cancel
@@ -513,6 +474,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
