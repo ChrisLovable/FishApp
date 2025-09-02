@@ -185,32 +185,4 @@ If the image is unclear or doesn't show a fish, set confidence to 0 and species 
   }
 }
 
-// Helper function to test API connection
-export const testOpenAIConnection = async (): Promise<boolean> => {
-  try {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY as string
-    if (!apiKey) {
-      console.error('OpenAI API key not found')
-      return false
-    }
 
-    // Test with a simple text request
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [{ role: 'user', content: 'Test connection' }],
-        max_tokens: 10
-      })
-    })
-
-    return response.ok
-  } catch (error) {
-    console.error('OpenAI connection test failed:', error)
-    return false
-  }
-}

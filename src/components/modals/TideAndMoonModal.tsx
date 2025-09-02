@@ -47,7 +47,7 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [isListening, setIsListening] = useState(false)
+
 
   // South African coastal locations (alphabetically sorted)
   const coastalLocations: LocationData[] = [
@@ -85,27 +85,7 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
     location.region.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Speech recognition for location search
-  const startListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
 
-      recognition.onstart = () => setIsListening(true)
-      recognition.onend = () => setIsListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        setSearchTerm(transcript)
-      }
-
-      recognition.start()
-    }
-  }
 
   // Fetch tide data from WorldTides API
   const fetchTideData = async (location: LocationData, date: string) => {
@@ -329,12 +309,12 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-1 pb-1">
-      <div className="relative w-full max-w-md mx-1 h-full">
-        <div className="modal-content rounded-2xl p-2 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-2 flex flex-col overflow-y-auto" style={{height: '800px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-2 flex-shrink-0">
-            <h2 className="text-lg font-bold text-white">Tide, Moon & Weather</h2>
+            <h2 className="text-lg font-bold text-white">🌊 Tide, Moon & Weather</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors p-1"
@@ -360,17 +340,9 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search coastal towns..."
-                    className="w-full px-2 py-1 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none pr-8 text-xs"
+                    className="w-full px-2 py-1 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
                   />
-                  <button
-                    onClick={startListening}
-                    className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                      isListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                    }`}
-                    title="Voice search"
-                  >
-                    🎤
-                  </button>
+
                 </div>
 
                 {/* Location Grid */}

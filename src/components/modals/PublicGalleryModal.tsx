@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react'
+import { supabase } from '../../config/supabase'
 
 interface CatchData {
-  id: string
-  anglerName: string
+  id: number
+  angler_name: string
   species: string
-  date: string
+  date_caught: string
   location: string
-  bait: string
-  length?: number
-  weight?: number
-  weather?: string
-  tide?: string
-  moonPhase?: string
+  bait_used: string
+  length_cm?: number
+  weight_kg?: number
+  weather_conditions?: string
+  tide_state?: string
+  moon_phase?: string
   notes: string
-  imageUrl: string
-  timestamp: number
-  userId: string
+  image_url: string
+  user_id: string
+  created_at: string
 }
 
 interface PublicGalleryModalProps {
@@ -26,6 +27,7 @@ interface PublicGalleryModalProps {
 const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
   const [catches, setCatches] = useState<CatchData[]>([])
   const [isUploading, setIsUploading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [showUploadForm, setShowUploadForm] = useState(false)
   const [currentUser, setCurrentUser] = useState('')
@@ -43,22 +45,12 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
     notes: ''
   })
 
-  // Load catches from localStorage on component mount
+  // Load catches from Supabase on component mount
   useEffect(() => {
-    const savedCatches = localStorage.getItem('publicCatches')
-    if (savedCatches) {
-      try {
-        setCatches(JSON.parse(savedCatches))
-      } catch (error) {
-        console.error('Error loading public catches:', error)
-      }
+    if (isOpen) {
+      loadCatches()
     }
-  }, [])
-
-  // Save catches to localStorage whenever catches change
-  useEffect(() => {
-    localStorage.setItem('publicCatches', JSON.stringify(catches))
-  }, [catches])
+  }, [isOpen])
 
   // Set current user (in a real app, this would come from authentication)
   useEffect(() => {
@@ -72,6 +64,36 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
       localStorage.setItem('currentUser', randomUser)
     }
   }, [])
+
+  // Load catches from Supabase
+  const loadCatches = async () => {
+    if (!supabase) {
+      console.error('Supabase not configured')
+      alert('Database not configured. Please check your environment variables.')
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('public_gallery')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50)
+
+      if (error) {
+        console.error('Error loading public gallery:', error)
+        alert('Error loading public gallery: ' + error.message)
+      } else {
+        setCatches(data || [])
+      }
+    } catch (error) {
+      console.error('Error loading public gallery:', error)
+      alert('Error loading public gallery')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -90,6 +112,11 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     
+    if (!supabase) {
+      alert('Database not configured. Please check your environment variables.')
+      return
+    }
+    
     if (!selectedImage) {
       alert('Please select an image')
       return
@@ -98,54 +125,78 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
     setIsUploading(true)
 
     try {
-      // Convert image to base64 for storage
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string
-        
-        const newCatch: CatchData = {
-          id: Date.now().toString(),
-          anglerName: formData.anglerName,
-          species: formData.species,
-          date: formData.date,
-          location: formData.location,
-          bait: formData.bait,
-          length: formData.length ? parseFloat(formData.length) : undefined,
-          weight: formData.weight ? parseFloat(formData.weight) : undefined,
-          weather: formData.weather || undefined,
-          tide: formData.tide || undefined,
-          moonPhase: formData.moonPhase || undefined,
-          notes: formData.notes,
-          imageUrl: imageUrl,
-          timestamp: Date.now(),
-          userId: currentUser // Add user ID to track ownership
-        }
+      // Upload image to Supabase storage
+      const fileExt = selectedImage.name.split('.').pop()
+      const fileName = `${currentUser}_${Date.now()}.${fileExt}`
+      const filePath = `${currentUser}/${fileName}`
 
-        setCatches(prev => [newCatch, ...prev])
-        
-        // Reset form
-        setFormData({
-          anglerName: '',
-          species: '',
-          date: new Date().toISOString().split('T')[0],
-          location: '',
-          bait: '',
-          length: '',
-          weight: '',
-          weather: '',
-          tide: '',
-          moonPhase: '',
-          notes: ''
-        })
-        setSelectedImage(null)
-        setShowUploadForm(false)
-        
-        // Reset file input
-        const fileInput = document.getElementById('image-input') as HTMLInputElement
-        if (fileInput) fileInput.value = ''
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('public-gallery')
+        .upload(filePath, selectedImage)
+
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError)
+        alert('Error uploading image: ' + uploadError.message)
+        return
       }
+
+      // Get public URL for the uploaded image
+      const { data: urlData } = supabase.storage
+        .from('public-gallery')
+        .getPublicUrl(filePath)
+
+      // Save catch data to database
+      const { data: insertData, error: insertError } = await supabase
+        .from('public_gallery')
+        .insert({
+          angler_name: formData.anglerName,
+          species: formData.species,
+          date_caught: formData.date,
+          location: formData.location,
+          bait_used: formData.bait,
+          length_cm: formData.length ? parseFloat(formData.length) : null,
+          weight_kg: formData.weight ? parseFloat(formData.weight) : null,
+          weather_conditions: formData.weather || null,
+          tide_state: formData.tide || null,
+          moon_phase: formData.moonPhase || null,
+          notes: formData.notes,
+          image_url: urlData.publicUrl,
+          user_id: currentUser
+        })
+        .select()
+
+      if (insertError) {
+        console.error('Error saving catch data:', insertError)
+        alert('Error saving catch data: ' + insertError.message)
+        return
+      }
+
+      // Reload catches to show the new entry
+      await loadCatches()
       
-      reader.readAsDataURL(selectedImage)
+      // Reset form
+      setFormData({
+        anglerName: '',
+        species: '',
+        date: new Date().toISOString().split('T')[0],
+        location: '',
+        bait: '',
+        length: '',
+        weight: '',
+        weather: '',
+        tide: '',
+        moonPhase: '',
+        notes: ''
+      })
+      setSelectedImage(null)
+      setShowUploadForm(false)
+      
+      // Reset file input
+      const fileInput = document.getElementById('image-input') as HTMLInputElement
+      if (fileInput) fileInput.value = ''
+
+      alert('Catch shared successfully!')
+      
     } catch (error) {
       console.error('Error uploading catch:', error)
       alert('Error uploading catch. Please try again.')
@@ -154,26 +205,68 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
     }
   }
 
-  const deleteCatch = (id: string, userId: string) => {
+  const deleteCatch = async (id: number, userId: string) => {
+    if (!supabase) {
+      alert('Database not configured. Please check your environment variables.')
+      return
+    }
+
     if (userId !== currentUser) {
       alert('You can only delete your own catches')
       return
     }
     
     if (confirm('Are you sure you want to delete this catch?')) {
-      setCatches(prev => prev.filter(catchItem => catchItem.id !== id))
+      try {
+        // Find the catch to get the image URL for deletion
+        const catchToDelete = catches.find(c => c.id === id)
+        
+        // Delete from database
+        const { error: deleteError } = await supabase
+          .from('public_gallery')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', currentUser)
+
+        if (deleteError) {
+          console.error('Error deleting catch:', deleteError)
+          alert('Error deleting catch: ' + deleteError.message)
+          return
+        }
+
+        // Delete image from storage if it exists
+        if (catchToDelete?.image_url) {
+          try {
+            const imagePath = catchToDelete.image_url.split('/').slice(-2).join('/')
+            await supabase.storage
+              .from('public-gallery')
+              .remove([imagePath])
+          } catch (storageError) {
+            console.warn('Error deleting image from storage:', storageError)
+            // Don't fail the whole operation if image deletion fails
+          }
+        }
+
+        // Reload catches
+        await loadCatches()
+        alert('Catch deleted successfully!')
+        
+      } catch (error) {
+        console.error('Error deleting catch:', error)
+        alert('Error deleting catch. Please try again.')
+      }
     }
   }
 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-md mx-2 h-full">
-        <div className="modal-content rounded-2xl p-3 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-3 flex flex-col overflow-y-auto" style={{height: '800px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
-            <h2 className="text-xl font-bold text-white">Public Gallery</h2>
+            <h2 className="text-xl font-bold text-white">🌐 Public Gallery</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors p-1"
@@ -397,7 +490,12 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
               <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-3">
                 <h3 className="text-lg font-semibold text-white mb-3">Recent Catches</h3>
                 
-                {catches.length === 0 ? (
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <div className="text-blue-400 text-lg mb-2">Loading catches...</div>
+                    <div className="text-gray-500 text-sm">Please wait</div>
+                  </div>
+                ) : catches.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="text-gray-400 text-lg mb-2">No catches shared yet</div>
                     <div className="text-gray-500 text-sm">Be the first to share your catch!</div>
@@ -410,9 +508,9 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
                           {/* Image */}
                           <div className="flex-shrink-0">
                             <img
-                              src={catchItem.imageUrl}
-                              alt={`Catch by ${catchItem.anglerName}`}
-                              className="w-24 h-24 object-cover rounded-lg"
+                              src={catchItem.image_url}
+                              alt={`Catch by ${catchItem.angler_name}`}
+                              className="w-24 h-auto max-h-24 object-contain rounded-lg"
                             />
                           </div>
                           
@@ -421,20 +519,22 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
                             <div className="flex items-start justify-between mb-2">
                               <div>
                                 <h4 className="text-white font-semibold text-sm">{catchItem.species}</h4>
-                                <p className="text-blue-300 text-xs">by {catchItem.anglerName}</p>
+                                <p className="text-blue-300 text-xs">by {catchItem.angler_name}</p>
                               </div>
-                              <button
-                                onClick={() => deleteCatch(catchItem.id, catchItem.userId)}
-                                className="text-red-400 hover:text-red-300 text-xs"
-                              >
-                                Delete
-                              </button>
+                              {catchItem.user_id === currentUser && (
+                                <button
+                                  onClick={() => deleteCatch(catchItem.id, catchItem.user_id)}
+                                  className="text-red-400 hover:text-red-300 text-xs"
+                                >
+                                  Delete
+                                </button>
+                              )}
                             </div>
                             
                             <div className="grid grid-cols-2 gap-2 text-xs">
                               <div>
                                 <span className="text-gray-400">Date:</span>
-                                <span className="text-white ml-1">{new Date(catchItem.date).toLocaleDateString()}</span>
+                                <span className="text-white ml-1">{new Date(catchItem.date_caught).toLocaleDateString()}</span>
                               </div>
                               <div>
                                 <span className="text-gray-400">Location:</span>
@@ -442,36 +542,36 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
                               </div>
                               <div>
                                 <span className="text-gray-400">Bait:</span>
-                                <span className="text-white ml-1">{catchItem.bait}</span>
+                                <span className="text-white ml-1">{catchItem.bait_used}</span>
                               </div>
-                              {catchItem.length && (
+                              {catchItem.length_cm && (
                                 <div>
                                   <span className="text-gray-400">Length:</span>
-                                  <span className="text-white ml-1">{catchItem.length}cm</span>
+                                  <span className="text-white ml-1">{catchItem.length_cm}cm</span>
                                 </div>
                               )}
-                              {catchItem.weight && (
+                              {catchItem.weight_kg && (
                                 <div>
                                   <span className="text-gray-400">Weight:</span>
-                                  <span className="text-white ml-1">{catchItem.weight}kg</span>
+                                  <span className="text-white ml-1">{catchItem.weight_kg}kg</span>
                                 </div>
                               )}
-                              {catchItem.weather && (
+                              {catchItem.weather_conditions && (
                                 <div>
                                   <span className="text-gray-400">Weather:</span>
-                                  <span className="text-white ml-1">{catchItem.weather}</span>
+                                  <span className="text-white ml-1">{catchItem.weather_conditions}</span>
                                 </div>
                               )}
-                              {catchItem.tide && (
+                              {catchItem.tide_state && (
                                 <div>
                                   <span className="text-gray-400">Tide:</span>
-                                  <span className="text-white ml-1">{catchItem.tide}</span>
+                                  <span className="text-white ml-1">{catchItem.tide_state}</span>
                                 </div>
                               )}
-                              {catchItem.moonPhase && (
+                              {catchItem.moon_phase && (
                                 <div>
                                   <span className="text-gray-400">Moon:</span>
-                                  <span className="text-white ml-1">{catchItem.moonPhase}</span>
+                                  <span className="text-white ml-1">{catchItem.moon_phase}</span>
                                 </div>
                               )}
                             </div>

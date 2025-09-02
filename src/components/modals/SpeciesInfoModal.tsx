@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { getFishImageUrl, getDistributionMapUrl, supabase } from '../../config/supabase'
-import { testSupabaseTables, addSampleSpeciesData } from '../../utils/testSupabaseConnection'
 
 interface FishingInfo {
   bait: string
@@ -45,8 +44,7 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
   const [searchTerm, setSearchTerm] = useState('')
   const [length, setLength] = useState('')
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null)
-  const [isListening, setIsListening] = useState(false)
-  const [isLengthListening, setIsLengthListening] = useState(false)
+
 
   // Load species data on component mount
   useEffect(() => {
@@ -215,52 +213,7 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
     fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Speech recognition for species search
-  const startSpeciesListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
 
-      recognition.onstart = () => setIsListening(true)
-      recognition.onend = () => setIsListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        setSearchTerm(transcript)
-      }
-
-      recognition.start()
-    }
-  }
-
-  // Speech recognition for length input
-  const startLengthListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
-
-      recognition.onstart = () => setIsLengthListening(true)
-      recognition.onend = () => setIsLengthListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        const numbers = transcript.match(/\d+\.?\d*/g)
-        if (numbers && numbers.length > 0) {
-          setLength(numbers[0])
-        }
-      }
-
-      recognition.start()
-    }
-  }
 
   // Calculate weight using the same formula as Length-to-Weight modal
   const calculateWeight = () => {
@@ -290,124 +243,26 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
     setCalculatedWeight(null)
   }
 
-  const handleTestSupabase = async () => {
-    console.log('Testing Supabase connection...')
-    const isConnected = await testSupabaseTables()
-    
-    if (isConnected) {
-      alert('✅ Supabase connection successful! All tables and storage buckets are ready.')
-    } else {
-      alert('❌ Supabase connection failed. Check console for details.')
-    }
-  }
 
-  const handleAddSampleData = async () => {
-    console.log('Adding sample species data...')
-    const success = await addSampleSpeciesData()
-    
-    if (success) {
-      alert('✅ Sample species data added successfully!')
-      // Reload species data
-      loadSpeciesData()
-    } else {
-      alert('❌ Failed to add sample data. Check console for details.')
-    }
-  }
-
-  const handleCheckStorageFiles = async () => {
-    if (!supabase) {
-      alert('❌ Supabase client not available')
-      return
-    }
-
-    try {
-      console.log('🔍 Checking storage files...')
-      
-      // List files in fish-images bucket
-      const { data: fishFiles, error: fishError } = await supabase.storage
-        .from('fish-images')
-        .list('')
-      
-      if (fishError) {
-        console.log('❌ Error listing fish-images:', fishError)
-        alert(`❌ Error listing fish-images: ${fishError.message}`)
-      } else {
-        console.log('✅ Fish images found:', fishFiles)
-        alert(`✅ Found ${fishFiles?.length || 0} fish images: ${fishFiles?.map(f => f.name).join(', ') || 'none'}`)
-      }
-      
-      // List files in distribution-maps bucket
-      const { data: mapFiles, error: mapError } = await supabase.storage
-        .from('distribution-maps')
-        .list('')
-      
-      if (mapError) {
-        console.log('❌ Error listing distribution-maps:', mapError)
-        alert(`❌ Error listing distribution-maps: ${mapError.message}`)
-      } else {
-        console.log('✅ Distribution maps found:', mapFiles)
-        const mapNames = mapFiles?.map(f => f.name).join(', ') || 'none'
-        alert(`✅ Found ${mapFiles?.length || 0} distribution maps: ${mapNames}`)
-        
-        // Also show the exact URLs being generated
-        if (mapFiles && mapFiles.length > 0) {
-          console.log('🔗 Distribution map URLs:')
-          mapFiles.forEach(file => {
-            const url = getDistributionMapUrl(file.name)
-            console.log(`${file.name}: ${url}`)
-          })
-        }
-      }
-      
-    } catch (error) {
-      console.error('Error checking storage files:', error)
-      alert(`❌ Error checking storage files: ${error}`)
-    }
-  }
 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-md mx-2 h-full">
-        <div className="modal-content rounded-2xl p-6 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '800px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6 flex-shrink-0">
             <h2 className="text-2xl font-bold text-white">🐠 Species Information</h2>
-            <div className="flex items-center gap-2">
-                          <div className="flex gap-2">
-              <button
-                onClick={handleTestSupabase}
-                className="text-blue-400 hover:text-blue-300 text-xs px-2 py-1 bg-blue-900/30 rounded"
-                title="Test Supabase Connection"
-              >
-                Test DB
-              </button>
-              <button
-                onClick={handleAddSampleData}
-                className="text-green-400 hover:text-green-300 text-xs px-2 py-1 bg-green-900/30 rounded"
-                title="Add Sample Species Data"
-              >
-                Add Data
-              </button>
-              <button
-                onClick={handleCheckStorageFiles}
-                className="text-purple-400 hover:text-purple-300 text-xs px-2 py-1 bg-purple-900/30 rounded"
-                title="Check Storage Files"
-              >
-                Check Files
-              </button>
-            </div>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors p-2"
-                aria-label="Close modal"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition-colors p-2"
+              aria-label="Close modal"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto overscroll-contain">
@@ -423,18 +278,10 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Type or speak fish name..."
-                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none pr-12"
+                    placeholder="Type fish name..."
+                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                   />
-                  <button
-                    onClick={startSpeciesListening}
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                      isListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                    }`}
-                    title="Voice search"
-                  >
-                    🎤
-                  </button>
+
                 </div>
 
                 {/* Species dropdown */}
@@ -489,43 +336,32 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                   {/* Fish Image */}
                   <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4">
                     <h3 className="text-sm font-semibold text-white mb-3">Fish Image</h3>
-                                         {currentSpecies['Image'] ? (
-                       <div className="flex justify-center">
-                         <img
-                           src={getFishImageUrl(currentSpecies['Image'])}
-                           alt={currentSpecies['English name']}
-                           className="w-full max-h-48 rounded-lg object-cover"
-                           onError={(e) => {
-                             (e.target as HTMLImageElement).style.display = 'none'
-                           }}
-                         />
-                       </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
-                        <span className="text-gray-400 text-sm">No image available</span>
-                      </div>
-                    )}
+                    <div className="flex justify-center">
+                      <img
+                        src={getFishImageUrl(currentSpecies['Image'] || '', currentSpecies['English name'])}
+                        alt={currentSpecies['English name']}
+                        className="w-full max-h-48 rounded-lg object-cover"
+                        onError={(e) => {
+                          // Fallback to roman.jpg if the specific image fails
+                          (e.target as HTMLImageElement).src = '/images/fish/roman.jpg'
+                        }}
+                      />
+                    </div>
                   </div>
 
                   {/* Distribution Map */}
                   <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4">
                     <h3 className="text-sm font-semibold text-white mb-3">Distribution Map</h3>
-                                         {currentSpecies['Distribution Map'] ? (
-                       <div className="flex justify-center">
-                         <img
-                           src={getDistributionMapUrl(currentSpecies['Distribution Map'])}
-                           alt={`${currentSpecies['English name']} distribution`}
-                           className="w-full max-h-48 rounded-lg object-cover"
-                           onError={(e) => {
-                             (e.target as HTMLImageElement).style.display = 'none'
-                           }}
-                         />
-                       </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
-                        <span className="text-gray-400 text-sm">No distribution map available</span>
-                      </div>
-                    )}
+                    <div className="flex justify-center">
+                      <img
+                        src={getDistributionMapUrl('')}
+                        alt={`${currentSpecies['English name']} distribution`}
+                        className="w-full max-h-48 rounded-lg object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none'
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -609,19 +445,11 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                           value={length}
                           onChange={(e) => setLength(e.target.value)}
                           placeholder="Enter length in centimeters..."
-                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none pr-12"
+                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none"
                           step="0.1"
                           min="0"
                         />
-                        <button
-                          onClick={startLengthListening}
-                          className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                            isLengthListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                          }`}
-                          title="Voice input"
-                        >
-                          🎤
-                        </button>
+
                       </div>
                     </div>
 

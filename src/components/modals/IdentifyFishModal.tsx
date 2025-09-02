@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { identifyFishWithOpenAI, testOpenAIConnection } from '../../utils/openaiVision'
+import { identifyFishWithOpenAI } from '../../utils/openaiVision'
 
 interface IdentifyFishModalProps {
   isOpen: boolean
@@ -11,6 +11,7 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [identificationResult, setIdentificationResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const [showAlternatives, setShowAlternatives] = useState(true)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,12 +62,6 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
     setError(null)
 
     try {
-      // Test API connection first
-      const isConnected = await testOpenAIConnection()
-      if (!isConnected) {
-        throw new Error('OpenAI API connection failed. Please check your API key.')
-      }
-
       // Call OpenAI Vision API
       const result = await identifyFishWithOpenAI(selectedImage)
       setIdentificationResult(result)
@@ -83,6 +78,7 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
     setSelectedImage(null)
     setIdentificationResult(null)
     setError(null)
+    setShowAlternatives(true)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -91,23 +87,13 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-md mx-2 h-full">
-        <div className="modal-content rounded-2xl p-6 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div className="relative w-full max-w-sm mx-auto" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-4 flex flex-col overflow-y-auto" style={{height: '800px'}}>
           {/* Header */}
-          <div className="flex items-center justify-between mb-6 flex-shrink-0">
-            <h2 className="text-2xl font-bold text-white">🔍 Identify a Fish</h2>
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
+            <h2 className="text-xl font-bold text-white">🔍 Identify Fish</h2>
             <div className="flex items-center gap-2">
-              <button
-                onClick={async () => {
-                  const isConnected = await testOpenAIConnection()
-                  alert(isConnected ? '✅ OpenAI API connected successfully!' : '❌ OpenAI API connection failed. Check your API key.')
-                }}
-                className="text-blue-400 hover:text-blue-300 text-xs px-2 py-1 bg-blue-900/30 rounded"
-                title="Test OpenAI API Connection"
-              >
-                Test API
-              </button>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-white transition-colors p-2"
@@ -120,8 +106,8 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto overscroll-contain">
-            <div className="space-y-6 pr-1">
+          <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">
+            <div className="space-y-4">
               {/* Upload Section */}
               <div className="bg-blue-900/30 rounded-lg border border-blue-500/50 p-6">
                 <h3 className="text-lg font-bold text-white mb-4">Upload Fish Photo</h3>
@@ -248,9 +234,17 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                    </div>
 
                   {/* Alternative Species */}
-                  {identificationResult.alternativeSpecies && identificationResult.alternativeSpecies.length > 0 && (
+                  {identificationResult.alternativeSpecies && identificationResult.alternativeSpecies.length > 0 && showAlternatives && (
                     <div className="bg-blue-900/30 rounded-lg border border-blue-500/50 p-6">
-                      <h3 className="text-lg font-bold text-white mb-4">Alternative Possibilities</h3>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-white">Alternative Possibilities</h3>
+                        <button
+                          onClick={() => setShowAlternatives(false)}
+                          className="text-blue-300 hover:text-blue-200 text-sm px-2 py-1 bg-blue-800/30 rounded transition-colors"
+                        >
+                          Hide
+                        </button>
+                      </div>
                       <div className="space-y-2">
                         {identificationResult.alternativeSpecies.map((alt: any, index: number) => (
                           <div key={index} className="flex justify-between items-center bg-blue-800/20 rounded-lg p-3">

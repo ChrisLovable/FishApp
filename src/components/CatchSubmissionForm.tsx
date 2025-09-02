@@ -11,6 +11,7 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
     species: '',
     quantity: '1',
     location_name: '',
+    spot_name: '',
     latitude: userLocation?.latitude || '',
     longitude: userLocation?.longitude || '',
     time_caught: new Date().toTimeString().slice(0, 5),
@@ -20,6 +21,8 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
     angler_name: '',
     angler_contact: ''
   })
+  const [useCurrentLocation, setUseCurrentLocation] = useState(!!userLocation)
+  const [isGettingLocation, setIsGettingLocation] = useState(false)
   const [speciesSearchTerm, setSpeciesSearchTerm] = useState('')
   const [showSpeciesDropdown, setShowSpeciesDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -278,7 +281,138 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
     "Yellowtail rockcod",
     "Zebra"
   ]
-  const saLocations = ['Hermanus', 'Knysna', 'Cape Point', 'Mossel Bay', 'St Francis Bay', 'Port Elizabeth', 'Durban', 'East London', 'Jeffreys Bay', 'Plettenberg Bay']
+  const saLocations = [
+    'Kosi Bay & Sodwana Bay',
+    'St Lucia, Cape Vidal & Mapelane',
+    'Richards Bay',
+    'Mtunzini',
+    'Tugela Mouth',
+    'Zinkwazi Beach',
+    'Blythedale Beach',
+    'Salt Rock',
+    'Ballito',
+    'Tongaat Beach & La Mercy',
+    'Umdloti',
+    'Umhlanga Rocks',
+    'Durban',
+    'Amanzimtoti',
+    'Kingsburgh',
+    'Sunlight Beach & Ilfracombe',
+    'Umkomaas',
+    'Clansthal',
+    'Scottburgh',
+    'Park Rynie',
+    'Pennington',
+    'Bazley',
+    'Mtwalume',
+    'Hibberdene',
+    'Pumula',
+    'Banana Beach',
+    'Umtentweni',
+    'Port Shepstone',
+    'Uvongo',
+    'Margate',
+    'Ramsgate',
+    'Southbroom',
+    'Palm Beach',
+    'Glenmore Beach',
+    'Port Edward',
+    'Wild Coast Sun Area',
+    'Mkambati Nature Reserve',
+    'Port St Johns',
+    'Brazen Head',
+    'Umtata Mouth',
+    'Coffee Bay & Hole in the Wall',
+    'Mbashe River',
+    'Qora Mouth',
+    'Mazeppa',
+    'Nxaxo Mouth',
+    'Trennery\'s & Seagulls',
+    'Kei Mouth & Morgans Bay',
+    'Haga-Haga',
+    'Cefane Mouth',
+    'Cintsa',
+    'Gonubie',
+    'East London',
+    'Kidds Beach',
+    'Christmas Rock',
+    'Kaysers Beach',
+    'Hamburg',
+    'Begha',
+    'Fish River mouth',
+    'Kleinemonde',
+    'Port Alfred',
+    'Kasouga',
+    'Kariega',
+    'Kenton-on-Sea',
+    'Bushmans River Mouth',
+    'Boknes',
+    'Cannon Rocks',
+    'Sundays River',
+    'Swartkops River',
+    'Port Elizabeth',
+    'Sea View',
+    'Van Stadens River',
+    'Gamtoos River',
+    'Kabeljous Beach',
+    'Jeffreys Bay',
+    'Paradise Beach',
+    'St Francis',
+    'Cape St Francis',
+    'Oyster Bay',
+    'Tsitsikamma',
+    'Nature\'s Valley',
+    'Keurboomstrand',
+    'Plettenberg Bay',
+    'Knoetzie',
+    'Knysna',
+    'Brenton-on-Sea',
+    'Buffels Bay',
+    'Sedgefield',
+    'Wilderness',
+    'Victoria Bay',
+    'Herolds Bay',
+    'Groot Brak River',
+    'Tergniet',
+    'Reebok',
+    'Klein Brak River',
+    'Hartenbos',
+    'Mossel Bay',
+    'Boggoms Bay',
+    'Vleesbaai',
+    'Gourits River Mouth',
+    'Stilbaai',
+    'Jongensfontein',
+    'Witsand',
+    'Arniston',
+    'Waenhuiskrans',
+    'Struisbaai',
+    'Pearly Beach',
+    'Gansbaai',
+    'Hermanus',
+    'Onrus & Hawston',
+    'Bettys Bay',
+    'Pringle Bay',
+    'Rooi Els',
+    'Gordons Bay',
+    'Strand',
+    'Strandfontein & Muizenberg',
+    'Fish Hoek',
+    'Simonstad',
+    'Kommetjie',
+    'Hout Bay',
+    'Camps Bay',
+    'Cape Town',
+    'Bloubergstrand',
+    'Yzerfontein',
+    'Langebaan',
+    'Saldanha',
+    'Paternoster',
+    'Elandsbaai',
+    'Hondeklipbaai',
+    'Kleinsee',
+    'Port Nolloth'
+  ]
 
   // Filter species based on search term
   const filteredSpecies = species.filter(speciesName =>
@@ -320,6 +454,37 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
     if (value === '') {
       setFormData(prev => ({ ...prev, species: '' }))
     }
+  }
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by this browser.')
+      return
+    }
+
+    setIsGettingLocation(true)
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setFormData(prev => ({
+          ...prev,
+          latitude: position.coords.latitude.toString(),
+          longitude: position.coords.longitude.toString()
+        }))
+        setUseCurrentLocation(true)
+        setIsGettingLocation(false)
+      },
+      (error) => {
+        console.error('Error getting location:', error)
+        alert('Unable to get your location. Please check your browser permissions.')
+        setIsGettingLocation(false)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    )
   }
 
   return (
@@ -397,10 +562,10 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Location */}
+          {/* Nearest Town */}
           <div>
             <label className="block text-white text-sm font-semibold mb-2">
-              Location *
+              Nearest Town *
             </label>
             <select
               value={formData.location_name}
@@ -408,13 +573,29 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
               required
               className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
             >
-              <option value="">Select location...</option>
+              <option value="">Select nearest town...</option>
               {saLocations.map(location => (
                 <option key={location} value={location}>{location}</option>
               ))}
             </select>
           </div>
 
+          {/* Spot Name */}
+          <div>
+            <label className="block text-white text-sm font-semibold mb-2">
+              Spot Name
+            </label>
+            <input
+              type="text"
+              value={formData.spot_name}
+              onChange={(e) => handleInputChange('spot_name', e.target.value)}
+              placeholder="e.g., Grotto Beach, Die Plaat"
+              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Time */}
           <div>
             <label className="block text-white text-sm font-semibold mb-2">
@@ -426,6 +607,33 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
               onChange={(e) => handleInputChange('time_caught', e.target.value)}
               className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
             />
+          </div>
+
+          {/* Geolocation */}
+          <div>
+            <label className="block text-white text-sm font-semibold mb-2">
+              Exact Location
+            </label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={getCurrentLocation}
+                disabled={isGettingLocation}
+                className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg font-semibold transition-colors text-sm"
+              >
+                {isGettingLocation ? 'Getting...' : '📍 Get GPS'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setUseCurrentLocation(false)
+                  setFormData(prev => ({ ...prev, latitude: '', longitude: '' }))
+                }}
+                className="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors text-sm"
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
 
@@ -505,11 +713,16 @@ const CatchSubmissionForm = ({ onSubmit, onCancel, userLocation }: CatchSubmissi
         </div>
 
         {/* GPS Info */}
-        {userLocation && (
+        {useCurrentLocation && formData.latitude && formData.longitude && (
           <div className="bg-blue-900/30 rounded border border-blue-500/30 p-3">
             <p className="text-blue-100 text-sm">
-              📍 Using your current location: {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}
+              📍 GPS Location captured: {parseFloat(formData.latitude).toFixed(4)}, {parseFloat(formData.longitude).toFixed(4)}
             </p>
+            {formData.spot_name && (
+              <p className="text-blue-200 text-sm mt-1">
+                🏖️ Spot: {formData.spot_name}
+              </p>
+            )}
           </div>
         )}
 

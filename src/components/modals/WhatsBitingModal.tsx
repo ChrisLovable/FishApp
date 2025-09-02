@@ -7,6 +7,7 @@ interface CatchReport {
   species: string
   quantity: number
   location_name: string
+  spot_name?: string
   latitude?: number
   longitude?: number
   date_caught: string
@@ -42,16 +43,136 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
 
   // South African fishing locations with coordinates
   const saLocations = [
-    { name: 'Hermanus', lat: -34.4187, lon: 19.2345 },
-    { name: 'Knysna', lat: -34.0351, lon: 23.0465 },
-    { name: 'Cape Point', lat: -34.3569, lon: 18.4940 },
-    { name: 'Mossel Bay', lat: -34.1833, lon: 22.1333 },
-    { name: 'St Francis Bay', lat: -34.1667, lon: 24.8333 },
-    { name: 'Port Elizabeth', lat: -33.9608, lon: 25.6022 },
+    { name: 'Kosi Bay & Sodwana Bay', lat: -26.9000, lon: 32.8833 },
+    { name: 'St Lucia, Cape Vidal & Mapelane', lat: -28.3833, lon: 32.4167 },
+    { name: 'Richards Bay', lat: -28.7833, lon: 32.1000 },
+    { name: 'Mtunzini', lat: -28.9500, lon: 31.7500 },
+    { name: 'Tugela Mouth', lat: -29.2167, lon: 31.4833 },
+    { name: 'Zinkwazi Beach', lat: -29.2833, lon: 31.4500 },
+    { name: 'Blythedale Beach', lat: -29.3500, lon: 31.4000 },
+    { name: 'Salt Rock', lat: -29.5000, lon: 31.2333 },
+    { name: 'Ballito', lat: -29.5333, lon: 31.2167 },
+    { name: 'Tongaat Beach & La Mercy', lat: -29.5833, lon: 31.1333 },
+    { name: 'Umdloti', lat: -29.6500, lon: 31.1000 },
+    { name: 'Umhlanga Rocks', lat: -29.7167, lon: 31.0833 },
     { name: 'Durban', lat: -29.8587, lon: 31.0218 },
+    { name: 'Amanzimtoti', lat: -30.0500, lon: 30.8833 },
+    { name: 'Kingsburgh', lat: -30.0833, lon: 30.8500 },
+    { name: 'Sunlight Beach & Ilfracombe', lat: -30.1167, lon: 30.8167 },
+    { name: 'Umkomaas', lat: -30.2000, lon: 30.8000 },
+    { name: 'Clansthal', lat: -30.2500, lon: 30.7667 },
+    { name: 'Scottburgh', lat: -30.2833, lon: 30.7500 },
+    { name: 'Park Rynie', lat: -30.3167, lon: 30.7167 },
+    { name: 'Pennington', lat: -30.3500, lon: 30.6833 },
+    { name: 'Bazley', lat: -30.3833, lon: 30.6500 },
+    { name: 'Mtwalume', lat: -30.4167, lon: 30.6167 },
+    { name: 'Hibberdene', lat: -30.4500, lon: 30.5833 },
+    { name: 'Pumula', lat: -30.4833, lon: 30.5500 },
+    { name: 'Banana Beach', lat: -30.5167, lon: 30.5167 },
+    { name: 'Umtentweni', lat: -30.5500, lon: 30.4833 },
+    { name: 'Port Shepstone', lat: -30.5833, lon: 30.4500 },
+    { name: 'Uvongo', lat: -30.6167, lon: 30.4167 },
+    { name: 'Margate', lat: -30.6500, lon: 30.3833 },
+    { name: 'Ramsgate', lat: -30.6833, lon: 30.3500 },
+    { name: 'Southbroom', lat: -30.7167, lon: 30.3167 },
+    { name: 'Palm Beach', lat: -30.7500, lon: 30.2833 },
+    { name: 'Glenmore Beach', lat: -30.7833, lon: 30.2500 },
+    { name: 'Port Edward', lat: -30.8167, lon: 30.2167 },
+    { name: 'Wild Coast Sun Area', lat: -30.8500, lon: 30.1833 },
+    { name: 'Mkambati Nature Reserve', lat: -30.8833, lon: 30.1500 },
+    { name: 'Port St Johns', lat: -31.6167, lon: 29.5333 },
+    { name: 'Brazen Head', lat: -31.6500, lon: 29.5000 },
+    { name: 'Umtata Mouth', lat: -31.6833, lon: 29.4667 },
+    { name: 'Coffee Bay & Hole in the Wall', lat: -31.7167, lon: 29.4333 },
+    { name: 'Mbashe River', lat: -31.7500, lon: 29.4000 },
+    { name: 'Qora Mouth', lat: -31.7833, lon: 29.3667 },
+    { name: 'Mazeppa', lat: -31.8167, lon: 29.3333 },
+    { name: 'Nxaxo Mouth', lat: -31.8500, lon: 29.3000 },
+    { name: 'Trennery\'s & Seagulls', lat: -31.8833, lon: 29.2667 },
+    { name: 'Kei Mouth & Morgans Bay', lat: -32.6833, lon: 28.3833 },
+    { name: 'Haga-Haga', lat: -32.7167, lon: 28.3500 },
+    { name: 'Cefane Mouth', lat: -32.7500, lon: 28.3167 },
+    { name: 'Cintsa', lat: -32.7833, lon: 28.2833 },
+    { name: 'Gonubie', lat: -32.8167, lon: 28.2500 },
     { name: 'East London', lat: -33.0292, lon: 27.8546 },
+    { name: 'Kidds Beach', lat: -33.0667, lon: 27.8167 },
+    { name: 'Christmas Rock', lat: -33.1000, lon: 27.7833 },
+    { name: 'Kaysers Beach', lat: -33.1333, lon: 27.7500 },
+    { name: 'Hamburg', lat: -33.1667, lon: 27.7167 },
+    { name: 'Begha', lat: -33.2000, lon: 27.6833 },
+    { name: 'Fish River mouth', lat: -33.2333, lon: 27.6500 },
+    { name: 'Kleinemonde', lat: -33.2667, lon: 27.6167 },
+    { name: 'Port Alfred', lat: -33.3000, lon: 27.5833 },
+    { name: 'Kasouga', lat: -33.3333, lon: 27.5500 },
+    { name: 'Kariega', lat: -33.3667, lon: 27.5167 },
+    { name: 'Kenton-on-Sea', lat: -33.4000, lon: 27.4833 },
+    { name: 'Bushmans River Mouth', lat: -33.4333, lon: 27.4500 },
+    { name: 'Boknes', lat: -33.4667, lon: 27.4167 },
+    { name: 'Cannon Rocks', lat: -33.5000, lon: 27.3833 },
+    { name: 'Sundays River', lat: -33.5333, lon: 27.3500 },
+    { name: 'Swartkops River', lat: -33.5667, lon: 27.3167 },
+    { name: 'Port Elizabeth', lat: -33.9608, lon: 25.6022 },
+    { name: 'Sea View', lat: -33.9833, lon: 25.5667 },
+    { name: 'Van Stadens River', lat: -34.0167, lon: 25.5333 },
+    { name: 'Gamtoos River', lat: -34.0500, lon: 25.5000 },
+    { name: 'Kabeljous Beach', lat: -34.0833, lon: 25.4667 },
     { name: 'Jeffreys Bay', lat: -34.0500, lon: 24.9167 },
-    { name: 'Plettenberg Bay', lat: -34.0500, lon: 23.3667 }
+    { name: 'Paradise Beach', lat: -34.0833, lon: 24.8833 },
+    { name: 'St Francis', lat: -34.1167, lon: 24.8500 },
+    { name: 'Cape St Francis', lat: -34.1500, lon: 24.8167 },
+    { name: 'Oyster Bay', lat: -34.1833, lon: 24.7833 },
+    { name: 'Tsitsikamma', lat: -34.2167, lon: 24.7500 },
+    { name: 'Nature\'s Valley', lat: -34.2500, lon: 24.7167 },
+    { name: 'Keurboomstrand', lat: -34.2833, lon: 24.6833 },
+    { name: 'Plettenberg Bay', lat: -34.0500, lon: 23.3667 },
+    { name: 'Knoetzie', lat: -34.0833, lon: 23.3333 },
+    { name: 'Knysna', lat: -34.0351, lon: 23.0465 },
+    { name: 'Brenton-on-Sea', lat: -34.0667, lon: 23.0167 },
+    { name: 'Buffels Bay', lat: -34.1000, lon: 22.9833 },
+    { name: 'Sedgefield', lat: -34.1333, lon: 22.9500 },
+    { name: 'Wilderness', lat: -34.1667, lon: 22.9167 },
+    { name: 'Victoria Bay', lat: -34.2000, lon: 22.8833 },
+    { name: 'Herolds Bay', lat: -34.2333, lon: 22.8500 },
+    { name: 'Groot Brak River', lat: -34.2667, lon: 22.8167 },
+    { name: 'Tergniet', lat: -34.3000, lon: 22.7833 },
+    { name: 'Reebok', lat: -34.3333, lon: 22.7500 },
+    { name: 'Klein Brak River', lat: -34.3667, lon: 22.7167 },
+    { name: 'Hartenbos', lat: -34.4000, lon: 22.6833 },
+    { name: 'Mossel Bay', lat: -34.1833, lon: 22.1333 },
+    { name: 'Boggoms Bay', lat: -34.2167, lon: 22.1000 },
+    { name: 'Vleesbaai', lat: -34.2500, lon: 22.0667 },
+    { name: 'Gourits River Mouth', lat: -34.2833, lon: 22.0333 },
+    { name: 'Stilbaai', lat: -34.3167, lon: 22.0000 },
+    { name: 'Jongensfontein', lat: -34.3500, lon: 21.9667 },
+    { name: 'Witsand', lat: -34.3833, lon: 21.9333 },
+    { name: 'Arniston', lat: -34.4167, lon: 21.9000 },
+    { name: 'Waenhuiskrans', lat: -34.4500, lon: 21.8667 },
+    { name: 'Struisbaai', lat: -34.4833, lon: 21.8333 },
+    { name: 'Pearly Beach', lat: -34.5167, lon: 21.8000 },
+    { name: 'Gansbaai', lat: -34.5500, lon: 21.7667 },
+    { name: 'Hermanus', lat: -34.4187, lon: 19.2345 },
+    { name: 'Onrus & Hawston', lat: -34.4500, lon: 19.2000 },
+    { name: 'Bettys Bay', lat: -34.4833, lon: 19.1667 },
+    { name: 'Pringle Bay', lat: -34.5167, lon: 19.1333 },
+    { name: 'Rooi Els', lat: -34.5500, lon: 19.1000 },
+    { name: 'Gordons Bay', lat: -34.5833, lon: 19.0667 },
+    { name: 'Strand', lat: -34.6167, lon: 19.0333 },
+    { name: 'Strandfontein & Muizenberg', lat: -34.6500, lon: 19.0000 },
+    { name: 'Fish Hoek', lat: -34.6833, lon: 18.9667 },
+    { name: 'Simonstad', lat: -34.7167, lon: 18.9333 },
+    { name: 'Kommetjie', lat: -34.7500, lon: 18.9000 },
+    { name: 'Hout Bay', lat: -34.7833, lon: 18.8667 },
+    { name: 'Camps Bay', lat: -34.8167, lon: 18.8333 },
+    { name: 'Cape Town', lat: -33.9249, lon: 18.4241 },
+    { name: 'Bloubergstrand', lat: -33.8000, lon: 18.4500 },
+    { name: 'Yzerfontein', lat: -33.3500, lon: 18.1500 },
+    { name: 'Langebaan', lat: -33.1000, lon: 18.0333 },
+    { name: 'Saldanha', lat: -33.0167, lon: 17.9500 },
+    { name: 'Paternoster', lat: -32.8167, lon: 17.8833 },
+    { name: 'Elandsbaai', lat: -32.3167, lon: 18.3167 },
+    { name: 'Hondeklipbaai', lat: -30.3167, lon: 17.2833 },
+    { name: 'Kleinsee', lat: -29.6667, lon: 17.0833 },
+    { name: 'Port Nolloth', lat: -29.2500, lon: 16.8667 }
   ]
 
   const species = [
@@ -426,8 +547,9 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
             species: formData.species,
             quantity: parseInt(formData.quantity),
             location_name: formData.location_name,
-            latitude: formData.latitude,
-            longitude: formData.longitude,
+            spot_name: formData.spot_name,
+            latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+            longitude: formData.longitude ? parseFloat(formData.longitude) : null,
             time_caught: formData.time_caught,
             conditions: formData.conditions,
             bait_used: formData.bait_used,
@@ -467,9 +589,9 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-md mx-2 h-full">
-        <div className="modal-content rounded-2xl p-6 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '800px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6 flex-shrink-0">
             <h2 className="text-2xl font-bold text-white">🎣 What's Biting Where?</h2>
@@ -531,14 +653,14 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-white text-sm font-semibold mb-2">
-                      Location
+                      Nearest Town
                     </label>
                     <select
                       value={selectedLocation}
                       onChange={(e) => setSelectedLocation(e.target.value)}
                       className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                     >
-                      <option value="all">All Locations</option>
+                      <option value="all">All Towns</option>
                       {saLocations.map(location => (
                         <option key={location.name} value={location.name}>
                           {location.name}
@@ -592,6 +714,9 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
                            <div>
                              <h4 className="text-lg font-bold text-orange-400">{report.species}</h4>
                              <p className="text-gray-300 text-sm">{report.location_name}</p>
+                             {report.spot_name && (
+                               <p className="text-blue-300 text-sm">📍 {report.spot_name}</p>
+                             )}
                              {report.quantity > 1 && (
                                <p className="text-blue-300 text-sm">Caught {report.quantity} fish</p>
                              )}
@@ -629,11 +754,8 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
                           </div>
                         )}
                         
-                                                 <div className="mt-3 flex items-center justify-between">
+                                                 <div className="mt-3">
                            <span className="text-gray-400 text-sm">Reported by: {report.angler_name}</span>
-                           <button className="text-blue-400 hover:text-blue-300 text-sm">
-                             View Details →
-                           </button>
                          </div>
                       </div>
                     ))}

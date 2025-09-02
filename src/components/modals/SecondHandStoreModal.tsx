@@ -256,12 +256,12 @@ const SecondHandStoreModal = ({ isOpen, onClose }: SecondHandStoreModalProps) =>
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-md mx-2 h-full">
-        <div className="modal-content rounded-2xl p-3 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-3 flex flex-col overflow-y-auto" style={{height: '800px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
-            <h2 className="text-xl font-bold text-white">Second-Hand Store</h2>
+            <h2 className="text-xl font-bold text-white">🛒 Second-Hand Store</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors p-1"

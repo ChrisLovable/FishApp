@@ -562,9 +562,9 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-md mx-2 h-full">
-        <div className="modal-content rounded-2xl p-6 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '800px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6 flex-shrink-0">
             <h2 className="text-2xl font-bold text-white">🏆 Competition Points Calculator</h2>
@@ -617,16 +617,6 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
                       {speciesData.length >= 50 && (
                         <span className="text-green-400 text-sm">✅ {speciesData.length} species loaded</span>
                       )}
-                      <button
-                        onClick={() => {
-                          console.log('🧪 TEST: Current speciesData:', speciesData)
-                          console.log('🧪 TEST: First 5 species:', speciesData.slice(0, 5).map(s => s.english_name))
-                          console.log('🧪 TEST: Looking for Albacore:', speciesData.filter(s => s.english_name.includes('Albacore')))
-                        }}
-                        className="text-xs bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-white"
-                      >
-                        Test Data
-                      </button>
                     </div>
                   </div>
                 <div className="grid grid-cols-1 gap-4">

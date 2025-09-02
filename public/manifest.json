@@ -1,0 +1,78 @@
+{
+  "name": "FishApp - Your Complete Fishing Companion",
+  "short_name": "FishApp",
+  "description": "Identify fish, track catches, check tides, and connect with the fishing community. Your ultimate fishing companion app.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1d4ed8",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["sports", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Identify Fish",
+      "short_name": "Identify",
+      "description": "Take a photo to identify fish species",
+      "url": "/?action=identify",
+      "icons": [
+        {
+          "src": "/icon-192x192.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "What's Biting",
+      "short_name": "Reports",
+      "description": "Check recent catch reports",
+      "url": "/?action=reports",
+      "icons": [
+        {
+          "src": "/icon-192x192.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Tide & Moon",
+      "short_name": "Tides",
+      "description": "Check tide and moon information",
+      "url": "/?action=tides",
+      "icons": [
+        {
+          "src": "/icon-192x192.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
