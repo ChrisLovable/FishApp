@@ -14,42 +14,59 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  
+  /* Mobile-first design system */
+  font-size: 16px; /* 1rem = 16px for readability */
+  --mobile-max-width: 414px;
+  --touch-target-min: 44px;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 #root {
-  max-width: 1280px;
+  max-width: var(--mobile-max-width);
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0;
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Custom modal styles */
+/* Custom modal styles - Mobile optimized */
 .modal-overlay {
   backdrop-filter: blur(10px);
   background: rgba(0, 0, 0, 0.5);
+  padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
 }
 
 .modal-content {
   background: linear-gradient(145deg, #1e293b, #334155);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-/* Custom button animations */
+/* Custom button animations - Mobile optimized */
 .feature-button {
   transition: all 0.3s ease;
   background: linear-gradient(145deg, #374151, #4b5563);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: var(--touch-target-min); /* 44px minimum touch target */
+  min-width: var(--touch-target-min);
+  touch-action: manipulation; /* Prevent double-tap zoom */
 }
 
 .feature-button:hover {
@@ -65,6 +82,21 @@ body {
 /* Mobile-first responsive design */
 @media (max-width: 640px) {
   #root {
-    padding: 1rem;
+    padding: 0;
+  }
+  
+  /* Ensure all modals are mobile-optimized */
+  .modal-content {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+    max-height: calc(100vh - 1rem);
+  }
+}
+
+/* High DPI display optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Optimize for retina displays */
+  .modal-content {
+    border-width: 0.5px;
   }
 }

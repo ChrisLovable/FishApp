@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { getFishImageUrl, getDistributionMapUrl, supabase } from '../../config/supabase'
-import { testSupabaseTables, addSampleSpeciesData } from '../../utils/testSupabaseConnection'
 
 interface FishingInfo {
   bait: string
@@ -45,8 +44,7 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
   const [searchTerm, setSearchTerm] = useState('')
   const [length, setLength] = useState('')
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null)
-  const [isListening, setIsListening] = useState(false)
-  const [isLengthListening, setIsLengthListening] = useState(false)
+
 
   // Load species data on component mount
   useEffect(() => {
@@ -88,26 +86,47 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
         } else if (supabaseData && supabaseData.length > 0) {
           console.log(`✅ Loaded ${supabaseData.length} species from Supabase`)
           
-          // Convert Supabase data to the expected format
-          const convertedData = supabaseData.map((row: any) => ({
-            'English name': row.english_name || '',
-            'Afrikaans name': row.afrikaans_name || '',
-            'Scientific name': row.scientific_name || '',
-            'Image': row.photo_name || '',
-            'Distribution Map': row.distribution_map || '',
-            ' Slope ': row.slope || 0,
-            ' Intercept ': row.intercept || 0,
-            'Description': row.notes || '',
-            'Distribution': row.distribution || '',
-            regulations: {
-              sizeLimit: row.size_limit || '',
-              bagLimit: row.bag_limit || '',
-              closedSeason: row.closed_season || ''
-            },
-            detailedDescription: row.notes || ''
-          }))
+          // Load local data to get slope/intercept values
+          const localData = await loadLocalSpeciesDataForSlopeIntercept()
+          console.log('🔍 Local data loaded:', localData.length, 'species')
+          const localSpeciesMap = new Map()
+          localData.forEach((species: any) => {
+            localSpeciesMap.set(species['English name'], species)
+          })
+          console.log('🔍 Local species map size:', localSpeciesMap.size)
           
-          setSpeciesData(convertedData)
+          // Convert Supabase data to the expected format
+          const convertedData = supabaseData.map((row: any) => {
+            const localSpecies = localSpeciesMap.get(row.english_name)
+            return {
+              'English name': row.english_name || '',
+              'Afrikaans name': row.afrikaans_name || '',
+              'Scientific name': row.scientific_name || '',
+              'Image': row.photo_name || '',
+              'Distribution Map': row.distribution_map || '',
+              ' Slope ': localSpecies?.[' Slope '] || (row.slope ? parseFloat(row.slope) : null),
+              ' Intercept ': localSpecies?.[' Intercept '] || (row.intercept ? parseFloat(row.intercept) : null),
+              'Description': row.notes || '',
+              'Distribution': row.distribution || '',
+              regulations: {
+                sizeLimit: row.size_limit || '',
+                bagLimit: row.bag_limit || '',
+                closedSeason: row.closed_season || ''
+              },
+              detailedDescription: row.notes || ''
+            }
+          })
+          
+          // Remove duplicates based on English name
+          const uniqueData = convertedData.filter((species, index, self) => 
+            index === self.findIndex(s => s['English name'] === species['English name'])
+          )
+          
+          console.log(`✅ Removed ${convertedData.length - uniqueData.length} duplicate species`)
+          console.log('🔍 Checking for Bigeye kingfish duplicates:')
+          const bigeyeEntries = uniqueData.filter(s => s['English name'] === 'Bigeye kingfish')
+          console.log('Bigeye kingfish entries:', bigeyeEntries.length, bigeyeEntries)
+          setSpeciesData(uniqueData)
           return
         } else {
           console.log('⚠️ No data found in Supabase, falling back to local data')
@@ -120,6 +139,22 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
     } catch (error) {
       console.error('❌ Error loading species data:', error)
       await loadLocalSpeciesData()
+    }
+  }
+
+  const loadLocalSpeciesDataForSlopeIntercept = async () => {
+    try {
+      const response = await fetch('/speciesData.json')
+      if (response.ok) {
+        const data = await response.json()
+        return data
+      } else {
+        console.warn('Species data file not found')
+        return []
+      }
+    } catch (error) {
+      console.error('Error loading local species data:', error)
+      return []
     }
   }
 
@@ -199,7 +234,14 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
           }
           return species
         })
-        setSpeciesData(enhancedData)
+        
+        // Remove duplicates based on English name
+        const uniqueData = enhancedData.filter((species, index, self) => 
+          index === self.findIndex(s => s['English name'] === species['English name'])
+        )
+        
+        console.log(`✅ Removed ${enhancedData.length - uniqueData.length} duplicate species from local data`)
+        setSpeciesData(uniqueData)
       } else {
         console.warn('Species data file not found')
         setSpeciesData([])
@@ -210,78 +252,88 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
     }
   }
 
-  // Filter species based on search term
-  const filteredSpecies = speciesData.filter(fish =>
-    fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Filter species based on search term and remove any remaining duplicates
+  const filteredSpecies = speciesData
+    .filter(fish =>
+      fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((fish, index, self) => 
+      index === self.findIndex(f => f['English name'] === fish['English name'])
+    )
 
-  // Speech recognition for species search
-  const startSpeciesListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
-
-      recognition.onstart = () => setIsListening(true)
-      recognition.onend = () => setIsListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        setSearchTerm(transcript)
-      }
-
-      recognition.start()
-    }
+  // Debug: Check for duplicates in filtered results
+  if (searchTerm.toLowerCase().includes('bigeye')) {
+    console.log('🔍 Filtered species for "bigeye":', filteredSpecies.filter(f => f['English name'].toLowerCase().includes('bigeye')))
   }
 
-  // Speech recognition for length input
-  const startLengthListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
 
-      recognition.onstart = () => setIsLengthListening(true)
-      recognition.onend = () => setIsLengthListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        const numbers = transcript.match(/\d+\.?\d*/g)
-        if (numbers && numbers.length > 0) {
-          setLength(numbers[0])
-        }
-      }
-
-      recognition.start()
-    }
-  }
 
   // Calculate weight using the same formula as Length-to-Weight modal
   const calculateWeight = () => {
-    if (currentSpecies && length) {
-      const lengthNum = parseFloat(length)
-      if (!isNaN(lengthNum) && lengthNum > 0) {
-        try {
-          const slope = currentSpecies[' Slope ']
-          const intercept = currentSpecies[' Intercept ']
-          const weight = Math.exp(slope + Math.log(lengthNum) * intercept)
-          
-          if (isFinite(weight) && weight > 0) {
-            setCalculatedWeight(weight)
-          } else {
-            setCalculatedWeight(null)
-          }
-        } catch (error) {
-          console.error('Calculation error:', error)
-          setCalculatedWeight(null)
-        }
+    console.log('🎣 === WEIGHT CALCULATION DEBUG ===')
+    console.log('📏 Length input:', length)
+    console.log('🐟 Current species:', currentSpecies?.['English name'])
+    console.log('🐟 Full species data:', currentSpecies)
+    
+    if (!currentSpecies) {
+      console.log('❌ No current species selected')
+      return
+    }
+    
+    if (!length || length.trim() === '') {
+      console.log('❌ No length provided')
+      return
+    }
+    
+    const lengthNum = parseFloat(length)
+    console.log('📐 Parsed length:', lengthNum)
+    
+    if (isNaN(lengthNum) || lengthNum <= 0) {
+      console.log('❌ Invalid length:', lengthNum)
+      return
+    }
+    
+    const slope = currentSpecies[' Slope ']
+    const intercept = currentSpecies[' Intercept ']
+    console.log('📊 Raw slope:', slope, 'Raw intercept:', intercept)
+    console.log('📊 Slope type:', typeof slope, 'Intercept type:', typeof intercept)
+    
+    if (slope === undefined || intercept === undefined) {
+      console.log('❌ Missing slope or intercept data')
+      console.log('🔍 Available keys:', Object.keys(currentSpecies))
+      return
+    }
+    
+    if (typeof slope !== 'number' || typeof intercept !== 'number') {
+      console.log('❌ Slope or intercept not numbers:', { slope, intercept })
+      return
+    }
+    
+    if (isNaN(slope) || isNaN(intercept)) {
+      console.log('❌ Slope or intercept are NaN:', { slope, intercept })
+      return
+    }
+    
+    try {
+      // Use the same formula as Length-to-Weight modal: EXP(Slope + LN(Length) × Intercept)
+      console.log('🧮 Calculating: Math.exp(' + slope + ' + Math.log(' + lengthNum + ') * ' + intercept + ')')
+      const logLength = Math.log(lengthNum)
+      console.log('🧮 Math.log(' + lengthNum + ') =', logLength)
+      const exponent = slope + logLength * intercept
+      console.log('🧮 Exponent =', exponent)
+      const weight = Math.exp(exponent)
+      console.log('⚖️ Final weight =', weight)
+      
+      if (isFinite(weight) && weight > 0) {
+        setCalculatedWeight(weight)
+        console.log('✅ Weight calculation successful!')
+      } else {
+        console.log('❌ Invalid weight result:', weight)
+        setCalculatedWeight(null)
       }
+    } catch (error) {
+      console.error('❌ Calculation error:', error)
+      setCalculatedWeight(null)
     }
   }
 
@@ -290,124 +342,26 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
     setCalculatedWeight(null)
   }
 
-  const handleTestSupabase = async () => {
-    console.log('Testing Supabase connection...')
-    const isConnected = await testSupabaseTables()
-    
-    if (isConnected) {
-      alert('✅ Supabase connection successful! All tables and storage buckets are ready.')
-    } else {
-      alert('❌ Supabase connection failed. Check console for details.')
-    }
-  }
 
-  const handleAddSampleData = async () => {
-    console.log('Adding sample species data...')
-    const success = await addSampleSpeciesData()
-    
-    if (success) {
-      alert('✅ Sample species data added successfully!')
-      // Reload species data
-      loadSpeciesData()
-    } else {
-      alert('❌ Failed to add sample data. Check console for details.')
-    }
-  }
-
-  const handleCheckStorageFiles = async () => {
-    if (!supabase) {
-      alert('❌ Supabase client not available')
-      return
-    }
-
-    try {
-      console.log('🔍 Checking storage files...')
-      
-      // List files in fish-images bucket
-      const { data: fishFiles, error: fishError } = await supabase.storage
-        .from('fish-images')
-        .list('')
-      
-      if (fishError) {
-        console.log('❌ Error listing fish-images:', fishError)
-        alert(`❌ Error listing fish-images: ${fishError.message}`)
-      } else {
-        console.log('✅ Fish images found:', fishFiles)
-        alert(`✅ Found ${fishFiles?.length || 0} fish images: ${fishFiles?.map(f => f.name).join(', ') || 'none'}`)
-      }
-      
-      // List files in distribution-maps bucket
-      const { data: mapFiles, error: mapError } = await supabase.storage
-        .from('distribution-maps')
-        .list('')
-      
-      if (mapError) {
-        console.log('❌ Error listing distribution-maps:', mapError)
-        alert(`❌ Error listing distribution-maps: ${mapError.message}`)
-      } else {
-        console.log('✅ Distribution maps found:', mapFiles)
-        const mapNames = mapFiles?.map(f => f.name).join(', ') || 'none'
-        alert(`✅ Found ${mapFiles?.length || 0} distribution maps: ${mapNames}`)
-        
-        // Also show the exact URLs being generated
-        if (mapFiles && mapFiles.length > 0) {
-          console.log('🔗 Distribution map URLs:')
-          mapFiles.forEach(file => {
-            const url = getDistributionMapUrl(file.name)
-            console.log(`${file.name}: ${url}`)
-          })
-        }
-      }
-      
-    } catch (error) {
-      console.error('Error checking storage files:', error)
-      alert(`❌ Error checking storage files: ${error}`)
-    }
-  }
 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center modal-overlay pt-2 pb-2">
-      <div className="relative w-full max-w-2xl mx-2 h-full">
-        <div className="modal-content rounded-2xl p-6 h-full flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+             <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '700px'}}>
+         <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '700px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6 flex-shrink-0">
             <h2 className="text-2xl font-bold text-white">🐠 Species Information</h2>
-            <div className="flex items-center gap-2">
-                          <div className="flex gap-2">
-              <button
-                onClick={handleTestSupabase}
-                className="text-blue-400 hover:text-blue-300 text-xs px-2 py-1 bg-blue-900/30 rounded"
-                title="Test Supabase Connection"
-              >
-                Test DB
-              </button>
-              <button
-                onClick={handleAddSampleData}
-                className="text-green-400 hover:text-green-300 text-xs px-2 py-1 bg-green-900/30 rounded"
-                title="Add Sample Species Data"
-              >
-                Add Data
-              </button>
-              <button
-                onClick={handleCheckStorageFiles}
-                className="text-purple-400 hover:text-purple-300 text-xs px-2 py-1 bg-purple-900/30 rounded"
-                title="Check Storage Files"
-              >
-                Check Files
-              </button>
-            </div>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors p-2"
-                aria-label="Close modal"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition-colors p-2"
+              aria-label="Close modal"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto overscroll-contain">
@@ -423,18 +377,10 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Type or speak fish name..."
-                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none pr-12"
+                    placeholder="Type fish name..."
+                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                   />
-                  <button
-                    onClick={startSpeciesListening}
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                      isListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                    }`}
-                    title="Voice search"
-                  >
-                    🎤
-                  </button>
+
                 </div>
 
                 {/* Species dropdown */}
@@ -485,47 +431,36 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                 </div>
 
                 {/* Images Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 gap-4 mb-6">
                   {/* Fish Image */}
                   <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4">
                     <h3 className="text-sm font-semibold text-white mb-3">Fish Image</h3>
-                                         {currentSpecies['Image'] ? (
-                       <div className="flex justify-center">
-                         <img
-                           src={getFishImageUrl(currentSpecies['Image'])}
-                           alt={currentSpecies['English name']}
-                           className="w-full max-h-48 rounded-lg object-cover"
-                           onError={(e) => {
-                             (e.target as HTMLImageElement).style.display = 'none'
-                           }}
-                         />
-                       </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
-                        <span className="text-gray-400 text-sm">No image available</span>
-                      </div>
-                    )}
+                    <div className="flex justify-center">
+                      <img
+                        src={getFishImageUrl(currentSpecies['Image'] || '', currentSpecies['English name'])}
+                        alt={currentSpecies['English name']}
+                        className="w-full max-h-48 rounded-lg object-cover"
+                        onError={(e) => {
+                          // Fallback to roman.jpg if the specific image fails
+                          (e.target as HTMLImageElement).src = '/images/fish/roman.jpg'
+                        }}
+                      />
+                    </div>
                   </div>
 
                   {/* Distribution Map */}
                   <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4">
                     <h3 className="text-sm font-semibold text-white mb-3">Distribution Map</h3>
-                                         {currentSpecies['Distribution Map'] ? (
-                       <div className="flex justify-center">
-                         <img
-                           src={getDistributionMapUrl(currentSpecies['Distribution Map'])}
-                           alt={`${currentSpecies['English name']} distribution`}
-                           className="w-full max-h-48 rounded-lg object-cover"
-                           onError={(e) => {
-                             (e.target as HTMLImageElement).style.display = 'none'
-                           }}
-                         />
-                       </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-32 bg-gray-700 rounded-lg">
-                        <span className="text-gray-400 text-sm">No distribution map available</span>
-                      </div>
-                    )}
+                    <div className="flex justify-center">
+                      <img
+                        src={getDistributionMapUrl('')}
+                        alt={`${currentSpecies['English name']} distribution`}
+                        className="w-full max-h-48 rounded-lg object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none'
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -609,19 +544,11 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                           value={length}
                           onChange={(e) => setLength(e.target.value)}
                           placeholder="Enter length in centimeters..."
-                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none pr-12"
+                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none"
                           step="0.1"
                           min="0"
                         />
-                        <button
-                          onClick={startLengthListening}
-                          className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                            isLengthListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                          }`}
-                          title="Voice input"
-                        >
-                          🎤
-                        </button>
+
                       </div>
                     </div>
 
@@ -656,15 +583,15 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
               </>
             )}
 
-                         {/* Return Button */}
-             <div className="flex justify-center">
-               <button
-                 onClick={onClose}
-                 className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
-               >
-                 Return to Main Menu
-               </button>
-             </div>
+              {/* Return Button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={onClose}
+                  className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
+                >
+                  Return to Main Menu
+                </button>
+              </div>
             </div>
           </div>
         </div>

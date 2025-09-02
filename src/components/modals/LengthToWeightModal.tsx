@@ -18,8 +18,7 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
   const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null)
   const [length, setLength] = useState('')
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null)
-  const [isListening, setIsListening] = useState(false)
-  const [isLengthListening, setIsLengthListening] = useState(false)
+
 
   // Load species data on component mount
   useEffect(() => {
@@ -50,14 +49,41 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
         } else if (supabaseData && supabaseData.length > 0) {
           console.log(`✅ Loaded ${supabaseData.length} species from Supabase for Length-to-Weight`)
           
+          // Check if Supabase data has valid slope/intercept values
+          const validDataCount = supabaseData.filter(row => row.slope !== null && row.intercept !== null).length
+          console.log(`📊 Valid slope/intercept data count: ${validDataCount} out of ${supabaseData.length}`)
+          
+          if (validDataCount < 10) {
+            console.log('⚠️ Insufficient valid data in Supabase, falling back to local data')
+            await loadLocalSpeciesData()
+            return
+          }
+          
           // Convert Supabase data to the expected format
           const convertedData = supabaseData.map((row: any) => ({
             'English name': row.english_name || '',
-            ' Slope ': row.slope || 0,
-            ' Intercept ': row.intercept || 0
+            ' Slope ': row.slope !== null ? row.slope : 0,
+            ' Intercept ': row.intercept !== null ? row.intercept : 0
           }))
           
-          setSpecies(convertedData)
+          // Remove duplicates based on English name
+          const uniqueData = convertedData.filter((species, index, self) => 
+            index === self.findIndex(s => s['English name'] === species['English name'])
+          )
+          
+          console.log(`✅ Removed ${convertedData.length - uniqueData.length} duplicate species from Length-to-Weight`)
+          
+          // Final check for any remaining duplicates
+          const finalNames = uniqueData.map(s => s['English name'])
+          const finalDuplicates = finalNames.filter((name, index) => finalNames.indexOf(name) !== index)
+          if (finalDuplicates.length > 0) {
+            console.log('🚨 STILL HAVE DUPLICATES AFTER CLEANUP:', finalDuplicates)
+          } else {
+            console.log('✅ No duplicates remaining after cleanup')
+          }
+          
+          setSpecies(uniqueData)
+          console.log('✅ Species data set successfully. First few species:', uniqueData.slice(0, 3))
           return
         } else {
           console.log('⚠️ No data found in Supabase, falling back to local data')
@@ -78,7 +104,25 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
       const response = await fetch('/speciesData.json')
       if (response.ok) {
         const data = await response.json()
-        setSpecies(data)
+        
+        // Remove duplicates based on English name
+        const uniqueData = data.filter((species, index, self) => 
+          index === self.findIndex(s => s['English name'] === species['English name'])
+        )
+        
+        console.log(`✅ Removed ${data.length - uniqueData.length} duplicate species from local Length-to-Weight data`)
+        
+        // Final check for any remaining duplicates
+        const finalNames = uniqueData.map(s => s['English name'])
+        const finalDuplicates = finalNames.filter((name, index) => finalNames.indexOf(name) !== index)
+        if (finalDuplicates.length > 0) {
+          console.log('🚨 STILL HAVE DUPLICATES AFTER LOCAL CLEANUP:', finalDuplicates)
+        } else {
+          console.log('✅ No duplicates remaining after local cleanup')
+        }
+        
+        setSpecies(uniqueData)
+        console.log('✅ Local species data loaded successfully. Count:', uniqueData.length, 'First few species:', uniqueData.slice(0, 3))
       } else {
         console.warn('Species data file not found')
         // Fallback placeholder data
@@ -97,85 +141,86 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
     }
   }
 
-  // Filter species based on search term (wildcard search)
-  const filteredSpecies = species.filter(fish =>
-    fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Filter species based on search term (wildcard search) and remove duplicates
+  const filteredSpecies = species
+    .filter(fish =>
+      fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((fish, index, self) =>
+      index === self.findIndex(f => f['English name'] === fish['English name'])
+    )
 
-  // Speech recognition for species search
-  const startSpeciesListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
-
-      recognition.onstart = () => setIsListening(true)
-      recognition.onend = () => setIsListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        setSearchTerm(transcript)
-      }
-
-      recognition.start()
+  // Debug: Check for duplicates when searching for "bigeye"
+  if (searchTerm.toLowerCase().includes('bigeye')) {
+    console.log('🔍 Length-to-Weight: Searching for "bigeye"')
+    console.log('🔍 Total species loaded:', species.length)
+    console.log('🔍 Filtered species count:', filteredSpecies.length)
+    const bigeyeEntries = filteredSpecies.filter(f => f['English name'].toLowerCase().includes('bigeye'))
+    console.log('🔍 Bigeye entries found:', bigeyeEntries.length, bigeyeEntries.map(f => f['English name']))
+    
+    // Check for exact duplicates
+    const allNames = species.map(s => s['English name'])
+    const duplicateNames = allNames.filter((name, index) => allNames.indexOf(name) !== index)
+    if (duplicateNames.length > 0) {
+      console.log('🚨 EXACT DUPLICATES FOUND:', duplicateNames)
+    } else {
+      console.log('✅ No exact duplicates found in species data')
     }
   }
 
-  // Speech recognition for length input
-  const startLengthListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = false
-      recognition.interimResults = false
-      recognition.lang = 'en-US'
 
-      recognition.onstart = () => setIsLengthListening(true)
-      recognition.onend = () => setIsLengthListening(false)
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript
-        // Extract numbers from speech
-        const numbers = transcript.match(/\d+\.?\d*/g)
-        if (numbers && numbers.length > 0) {
-          setLength(numbers[0])
-        }
-      }
-
-      recognition.start()
-    }
-  }
 
   // Calculate weight using Excel formula: Weight = EXP(Slope + LN(Length) × Intercept)  
   // This matches: =EXP(K + LN(J) × L) where J=Length, K=Slope, L=Intercept
   // Result is in kilograms
   const calculateWeight = () => {
+    console.log('🧮 Starting weight calculation...')
+    console.log('📊 Selected species:', selectedSpecies)
+    console.log('📏 Length input:', length)
+    console.log('📋 Available species count:', species.length)
+    
     if (selectedSpecies && length) {
       const lengthNum = parseFloat(length)
+      console.log('📏 Parsed length:', lengthNum)
+      
       if (!isNaN(lengthNum) && lengthNum > 0) {
         try {
           // Excel formula: EXP(K + LN(J) × L) where J=Length, K=Slope, L=Intercept
           // This translates to: EXP(Slope + LN(Length) × Intercept)
           const slope = selectedSpecies[' Slope ']        // K = Slope column
           const intercept = selectedSpecies[' Intercept '] // L = Intercept column
+          
+          console.log('📊 Calculation values:', {
+            species: selectedSpecies['English name'],
+            slope: slope,
+            intercept: intercept,
+            length: lengthNum,
+            lnLength: Math.log(lengthNum),
+            slopePlusLnLengthTimesIntercept: slope + Math.log(lengthNum) * intercept
+          })
+          
           const weight = Math.exp(slope + Math.log(lengthNum) * intercept)
+          console.log('⚖️ Calculated weight:', weight)
           
           // Check for valid result (IFERROR equivalent)
           if (isFinite(weight) && weight > 0) {
             setCalculatedWeight(weight)
+            console.log('✅ Weight calculation successful:', weight, 'kg')
           } else {
-            console.error('Invalid calculation result')
+            console.error('❌ Invalid calculation result:', weight)
             setCalculatedWeight(null)
           }
         } catch (error) {
-          console.error('Calculation error:', error)
+          console.error('❌ Calculation error:', error)
           setCalculatedWeight(null)
         }
+      } else {
+        console.error('❌ Invalid length input:', lengthNum)
+        setCalculatedWeight(null)
       }
+    } else {
+      console.error('❌ Missing species or length:', { selectedSpecies, length })
+      setCalculatedWeight(null)
     }
   }
 
@@ -190,8 +235,8 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay">
-      <div className="relative w-full max-w-md mx-4 max-h-screen">
-        <div className="modal-content rounded-2xl p-6 h-full flex flex-col overflow-y-auto">
+      <div className="relative w-full mx-2" style={{maxWidth: '414px', maxHeight: '700px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '700px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">📏 Length-to-Weight</h2>
@@ -217,18 +262,10 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Type or speak fish name..."
-                  className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none pr-12"
+                  placeholder="Type fish name..."
+                  className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                 />
-                <button
-                  onClick={startSpeciesListening}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                    isListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                  }`}
-                  title="Voice search"
-                >
-                  🎤
-                </button>
+
               </div>
 
               {/* Species dropdown */}
@@ -238,6 +275,7 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
                     <button
                       key={index}
                       onClick={() => {
+                        console.log('🎯 Species selected from dropdown:', fish)
                         setSelectedSpecies(fish)
                         setSearchTerm(fish['English name'])
                       }}
@@ -263,19 +301,11 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
                   value={length}
                   onChange={(e) => setLength(e.target.value)}
                   placeholder="Enter length in centimeters..."
-                  className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none pr-12"
+                  className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                   step="0.1"
                   min="0"
                 />
-                <button
-                  onClick={startLengthListening}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${
-                    isLengthListening ? 'text-red-500 bg-red-900/30 animate-pulse' : 'text-gray-400 hover:text-white'
-                  }`}
-                  title="Voice input"
-                >
-                  🎤
-                </button>
+
               </div>
             </div>
 
@@ -287,6 +317,8 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
             >
               Calculate Weight
             </button>
+
+
 
             {/* Result */}
             {calculatedWeight !== null && (
