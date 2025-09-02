@@ -43,13 +43,8 @@ const MainModal = ({ isOpen, onClose }: MainModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-<<<<<<< HEAD
-              <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '700px'}}>
-         <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '700px'}}>
-=======
-      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '800px'}}>
->>>>>>> aec493b3d4f4401a4fa8d20723737dd5b8ef8d41
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '700px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '700px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h2 className="text-xl font-bold text-white">FishApp Menu</h2>
