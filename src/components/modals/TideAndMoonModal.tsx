@@ -117,7 +117,7 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
       const API_KEY = 'd17abb17-48e7-43d8-9ab9-9be20d1c0110' // Your WorldTides API key
       const dateObj = new Date(date)
       const start = Math.floor(dateObj.getTime() / 1000)
-      const end = start + (24 * 60 * 60) // 24 hours later
+      // const end = start + (24 * 60 * 60) // 24 hours later - unused
       
       const response = await fetch(
         `https://www.worldtides.info/api/v3?extremes&lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&start=${start}&length=86400&key=${API_KEY}`

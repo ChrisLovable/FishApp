@@ -48,7 +48,7 @@ const compressImage = (base64: string, maxWidth: number = 1024, quality: number 
 }
 
 export const identifyFishWithOpenAI = async (imageBase64: string): Promise<FishIdentificationResult> => {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY as string
   
   if (!apiKey) {
     throw new Error('OpenAI API key not found. Please add VITE_OPENAI_API_KEY to your .env file.')
@@ -188,7 +188,7 @@ If the image is unclear or doesn't show a fish, set confidence to 0 and species 
 // Helper function to test API connection
 export const testOpenAIConnection = async (): Promise<boolean> => {
   try {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY as string
     if (!apiKey) {
       console.error('OpenAI API key not found')
       return false

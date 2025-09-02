@@ -8,8 +8,8 @@ export const testSupabaseTables = async () => {
   }
 
   // Log the Supabase configuration (without exposing keys)
-  console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL)
-  console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY)
+  console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL as string)
+  console.log('Supabase Key exists:', !!(import.meta.env.VITE_SUPABASE_ANON_KEY as string))
 
   try {
     // Test 1: Check if tables exist
@@ -75,7 +75,7 @@ export const testSupabaseTables = async () => {
       return false
     }
     
-    const bucketNames = buckets?.map(b => b.name) || []
+    const bucketNames = buckets?.map((b: any) => b.name) || []
     const requiredBuckets = ['fish-images', 'distribution-maps', 'catch-photos', 'store-items']
     
     console.log('Available buckets:', bucketNames)

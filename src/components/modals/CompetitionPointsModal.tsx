@@ -306,9 +306,9 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
         console.log('Sample raw data:', data.slice(0, 2))
         // Convert the local data format to match Supabase format
         const convertedData = data.map((item: any) => ({
-          english_name: item['English name'],
-          slope: item[' Slope '],
-          intercept: item[' Intercept ']
+          english_name: item['English name'] || '',
+          slope: item[' Slope '] || 0,
+          intercept: item[' Intercept '] || 0
         }))
         console.log('✅ Converted data sample:', convertedData.slice(0, 2))
         console.log('🔍 All species names from local data:')
