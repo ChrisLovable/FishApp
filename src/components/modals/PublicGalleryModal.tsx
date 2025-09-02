@@ -1180,8 +1180,13 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+<<<<<<< HEAD
       <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '700px'}}>
         <div className="modal-content rounded-2xl p-3 flex flex-col overflow-y-auto" style={{height: '700px'}}>
+=======
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl p-3 flex flex-col overflow-y-auto" style={{height: '800px'}}>
+>>>>>>> aec493b3d4f4401a4fa8d20723737dd5b8ef8d41
           {/* Header */}
           <div className="flex items-center justify-between mb-3 flex-shrink-0">
             <h2 className="text-xl font-bold text-white">🌐 Public Gallery</h2>

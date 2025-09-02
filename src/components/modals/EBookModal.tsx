@@ -122,8 +122,13 @@ We'll contact you within 24 hours to arrange payment and delivery.
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+<<<<<<< HEAD
              <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '700px'}}>
          <div className="modal-content rounded-2xl flex flex-col" style={{height: '700px'}}>
+=======
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
+        <div className="modal-content rounded-2xl flex flex-col" style={{height: '800px'}}>
+>>>>>>> aec493b3d4f4401a4fa8d20723737dd5b8ef8d41
           {/* Fixed Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-600 flex-shrink-0">
             <div className="flex items-center gap-4">
