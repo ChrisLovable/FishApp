@@ -1,0 +1,1262 @@
+[
+  {
+    "English name": "Albacore / Longfin tuna",
+    " Slope ": -11.19678266,
+    " Intercept ": 3.097296052
+  },
+  {
+    "English name": "Atlantic bonito",
+    " Slope ": -11.58205986,
+    " Intercept ": 3.104504108
+  },
+  {
+    "English name": "Baardman",
+    " Slope ": -11.4194509,
+    " Intercept ": 3.0204
+  },
+  {
+    "English name": "Banded catshark",
+    " Slope ": -12.89350986,
+    " Intercept ": 3.048912048
+  },
+  {
+    "English name": "Banded galjoen",
+    " Slope ": -10.98548985,
+    " Intercept ": 3.153011084
+  },
+  {
+    "English name": "Barred needlefish",
+    " Slope ": -14.15301037,
+    " Intercept ": 3.126049995
+  },
+  {
+    "English name": "Barred rubberlip",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "Bartailed flathead",
+    " Slope ": -9.529065132,
+    " Intercept ": 2.383610964
+  },
+  {
+    "English name": "Bigeye kingfish",
+    " Slope ": -9.286496056,
+    " Intercept ": 2.573
+  },
+  {
+    "English name": "Bigeye stumpnose",
+    " Slope ": -10.59704971,
+    " Intercept ": 3.030087948
+  },
+  {
+    "English name": "Bigeye thresher",
+    " Slope ": -10.03355026,
+    " Intercept ": 2.856935024
+  },
+  {
+    "English name": "Bigeye tuna",
+    " Slope ": -10.63911242,
+    " Intercept ": 2.9773974
+  },
+  {
+    "English name": "Bigspot rockcod",
+    " Slope ": -11.22684002,
+    " Intercept ": 3.028954983
+  },
+  {
+    "English name": "Biscuit skate",
+    " Slope ": -14.6211915596129,
+    " Intercept ": 4.00021672776654
+  },
+  {
+    "English name": "Black marlin",
+    " Slope ": -11.94376423,
+    " Intercept ": 2.960011686
+  },
+  {
+    "English name": "Black musselcracker",
+    " Slope ": -10.6225996,
+    " Intercept ": 3.03468895
+  },
+  {
+    "English name": "Black rubberlip / Harry hotlips",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "Blackback blaasop",
+    " Slope ": -10.82821893,
+    " Intercept ": 2.934397784
+  },
+  {
+    "English name": "Blackfin reef shark",
+    " Slope ": -11.34669971,
+    " Intercept ": 3.049860954
+  },
+  {
+    "English name": "Blacksaddle goatfish ",
+    " Slope ": -11.11012884,
+    " Intercept ": 3.019166473
+  },
+  {
+    "English name": "Blackspot shark",
+    " Slope ": -12.17357651,
+    " Intercept ": 3.233331686
+  },
+  {
+    "English name": "Blackspotted rubberlip ",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "Blacktail",
+    " Slope ": -11.25680542,
+    " Intercept ": 3.242000103
+  },
+  {
+    "English name": "Blacktip kingfish",
+    " Slope ": -10.49559021,
+    " Intercept ": 2.856364965
+  },
+  {
+    "English name": "Blacktip shark (Female)",
+    " Slope ": -11.43505001,
+    " Intercept ": 3.079823017
+  },
+  {
+    "English name": "Blacktip shark (Male)",
+    " Slope ": -11.34669971,
+    " Intercept ": 3.049860954
+  },
+  {
+    "English name": "Blacspotted electric ray",
+    " Slope ": -9.804895401,
+    " Intercept ": 2.807568073
+  },
+  {
+    "English name": "Blood snapper",
+    " Slope ": -10.90315893,
+    " Intercept ": 2.919999823
+  },
+  {
+    "English name": "Blotcheye soldier",
+    " Slope ": -10.85581017,
+    " Intercept ": 3.034080982
+  },
+  {
+    "English name": "Bludger",
+    " Slope ": -9.975300789,
+    " Intercept ": 2.745455027
+  },
+  {
+    "English name": "Blue chub",
+    " Slope ": -10.88860035,
+    " Intercept ": 3.044718981
+  },
+  {
+    "English name": "Blue emperor",
+    " Slope ": -10.58632618,
+    " Intercept ": 3.009999058
+  },
+  {
+    "English name": "Blue hottentot",
+    " Slope ": -11.16986078,
+    " Intercept ": 3.149004285
+  },
+  {
+    "English name": "Blue kingfish",
+    " Slope ": -10.20810032,
+    " Intercept ": 2.850805044
+  },
+  {
+    "English name": "Blue shark (Female)",
+    " Slope ": -13.80794411,
+    " Intercept ": 3.41
+  },
+  {
+    "English name": "Blue shark (Male)",
+    " Slope ": -13.0849664,
+    " Intercept ": 3.2
+  },
+  {
+    "English name": "Blue stingray (Female)",
+    " Slope ": -11.04084969,
+    " Intercept ": 3.251389027
+  },
+  {
+    "English name": "Blue stingray (Male)",
+    " Slope ": -11.08378029,
+    " Intercept ": 3.185832024
+  },
+  {
+    "English name": "Bluebarred parrotfish",
+    " Slope ": -11.01560974,
+    " Intercept ": 3.041918039
+  },
+  {
+    "English name": "Bluefin kingfish",
+    " Slope ": -10.7678299,
+    " Intercept ": 2.941328049
+  },
+  {
+    "English name": "Bluefin tuna",
+    " Slope ": -10.67263985,
+    " Intercept ": 2.933377981
+  },
+  {
+    "English name": "Blueskin",
+    " Slope ": -11.12160969,
+    " Intercept ": 3.016948938
+  },
+  {
+    "English name": "Bluespotted ribbontail ",
+    " Slope ": -9.153886795,
+    " Intercept ": 2.712804079
+  },
+  {
+    "English name": "Bluetail mullet",
+    " Slope ": -11.50212002,
+    " Intercept ": 3.104231119
+  },
+  {
+    "English name": "Bluntnose guitarfish",
+    " Slope ": -12.02099466,
+    " Intercept ": 2.869810939
+  },
+  {
+    "English name": "Bohar / Twinspot snapper",
+    " Slope ": -10.44656912,
+    " Intercept ": 2.901143485
+  },
+  {
+    "English name": "Bonefish",
+    " Slope ": -10.6660099,
+    " Intercept ": 2.889776945
+  },
+  {
+    "English name": "Brassy chub",
+    " Slope ": -10.81772995,
+    " Intercept ": 3.036582947
+  },
+  {
+    "English name": "Brassy kingfish",
+    " Slope ": -10.60321999,
+    " Intercept ": 2.910526991
+  },
+  {
+    "English name": "Bridle triggerfish",
+    " Slope ": -10.38154638,
+    " Intercept ": 2.9470048
+  },
+  {
+    "English name": "Brindle bass",
+    " Slope ": -10.96440029,
+    " Intercept ": 2.999917984
+  },
+  {
+    "English name": "Bronze bream",
+    " Slope ": -10.61913013,
+    " Intercept ": 3.046120882
+  },
+  {
+    "English name": "Brown shyshark",
+    " Slope ": -11.970011661732626,
+    " Intercept ": 2.971470681793536
+  },
+  {
+    "English name": "Bull / Zambezi shark (Female)",
+    " Slope ": -10.76966953,
+    " Intercept ": 2.979747057
+  },
+  {
+    "English name": "Bull / Zambezi shark (Male)",
+    " Slope ": -10.54288006,
+    " Intercept ": 2.929411888
+  },
+  {
+    "English name": "Bull ray / Duckbill",
+    " Slope ": -9.487839699,
+    " Intercept ": 2.670084953
+  },
+  {
+    "English name": "Bumpnose kingfish",
+    " Slope ": -10.17663956,
+    " Intercept ": 2.864478111
+  },
+  {
+    "English name": "Cape gurnard",
+    " Slope ": -11.34669018,
+    " Intercept ": 2.998744011
+  },
+  {
+    "English name": "Cape knifejaw",
+    " Slope ": -8.149279594,
+    " Intercept ": 2.317797899
+  },
+  {
+    "English name": "Cape moony",
+    " Slope ": -10.40680981,
+    " Intercept ": 2.964607
+  },
+  {
+    "English name": "Cape stumpnose",
+    " Slope ": -10.06836424,
+    " Intercept ": 2.9266004
+  },
+  {
+    "English name": "Carpenter / Silverfish",
+    " Slope ": -10.99480285,
+    " Intercept ": 2.924005836
+  },
+  {
+    "English name": "Catface rockcod",
+    " Slope ": -10.91963005,
+    " Intercept ": 2.905693054
+  },
+  {
+    "English name": "Cavebass",
+    " Slope ": -10.60066032,
+    " Intercept ": 2.960002899
+  },
+  {
+    "English name": "Clown triggerfish",
+    " Slope ": -10.62203026,
+    " Intercept ": 3.018528938
+  },
+  {
+    "English name": "Cock grunter",
+    " Slope ": -10.24875749,
+    " Intercept ": 2.749991417
+  },
+  {
+    "English name": "Common / Dusky kob",
+    " Slope ": -11.64128017,
+    " Intercept ": 3.039433002
+  },
+  {
+    "English name": "Concertina fish",
+    " Slope ": -10.95837975,
+    " Intercept ": 3.175065041
+  },
+  {
+    "English name": "Copper / Bronze shark (Female)",
+    " Slope ": -11.91701984,
+    " Intercept ": 3.140988111
+  },
+  {
+    "English name": "Copper / Bronze shark (Male)",
+    " Slope ": -11.80140018,
+    " Intercept ": 3.109893084
+  },
+  {
+    "English name": "Cutlass fish",
+    " Slope ": -15.33028071,
+    " Intercept ": 3.290133247
+  },
+  {
+    "English name": "Cutthroat emperor",
+    " Slope ": -11.04290266,
+    " Intercept ": 3.076994578
+  },
+  {
+    "English name": "Dageraad",
+    " Slope ": -10.89997959,
+    " Intercept ": 3.150401115
+  },
+  {
+    "English name": "Dane",
+    " Slope ": -10.84992981,
+    " Intercept ": 2.984142065
+  },
+  {
+    "English name": "Dark shyshark",
+    " Slope ": -11.970011661732626,
+    " Intercept ": 2.971470681793536
+  },
+  {
+    "English name": "Diamond / Butterfly ray",
+    " Slope ": -11.79977989,
+    " Intercept ": 3.03984499
+  },
+  {
+    "English name": "Dorado / Dolphin fish",
+    " Slope ": -10.015494,
+    " Intercept ": 2.60199103
+  },
+  {
+    "English name": "Double-spotted queenfish",
+    " Slope ": -11.35838032,
+    " Intercept ": 2.896507025
+  },
+  {
+    "English name": "Dusky / Ridgeback Grey shark",
+    " Slope ": -11.3801071,
+    " Intercept ": 3.0499923
+  },
+  {
+    "English name": "Dusky rubberlip",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "Eagle ray",
+    " Slope ": -11.16779041,
+    " Intercept ": 3.059699059
+  },
+  {
+    "English name": "Eastern little tuna / Kawakawa",
+    " Slope ": -10.62724018,
+    " Intercept ": 2.908230066
+  },
+  {
+    "English name": "Eel catfish",
+    " Slope ": -11.60569,
+    " Intercept ": 2.939677
+  },
+  {
+    "English name": "Elephant fish / St Joseph",
+    " Slope ": -11.73982607,
+    " Intercept ": 3
+  },
+  {
+    "English name": "Elf / Shad",
+    " Slope ": -11.15363979,
+    " Intercept ": 2.980024099
+  },
+  {
+    "English name": "Englishman",
+    " Slope ": -9.570588112,
+    " Intercept ": 2.740123034
+  },
+  {
+    "English name": "Evileye blaasop",
+    " Slope ": -10.82821893,
+    " Intercept ": 2.934397784
+  },
+  {
+    "English name": "Flathead mullet",
+    " Slope ": -11.36104012,
+    " Intercept ": 3.065074921
+  },
+  {
+    "English name": "Fransmadam",
+    " Slope ": -10.84992981,
+    " Intercept ": 2.984142065
+  },
+  {
+    "English name": "Galjoen",
+    " Slope ": -11.1244642697291,
+    " Intercept ": 3.13519652641689
+  },
+  {
+    "English name": "Geelbek",
+    " Slope ": -11.66189169,
+    " Intercept ": 3.010003379
+  },
+  {
+    "English name": "Giant guitarfish / Giant sandshark",
+    " Slope ": -12.15007973,
+    " Intercept ": 3.011601925
+  },
+  {
+    "English name": "Giant kingfish",
+    " Slope ": -10.7853921,
+    " Intercept ": 2.987003158
+  },
+  {
+    "English name": "Giant yellowtail",
+    " Slope ": -10.31437016,
+    " Intercept ": 2.756263971
+  },
+  {
+    "English name": "Golden kingfish",
+    " Slope ": -10.82273006,
+    " Intercept ": 2.994575024
+  },
+  {
+    "English name": "Goldsaddle hogfish",
+    " Slope ": -11.34317988,
+    " Intercept ": 3.148749421
+  },
+  {
+    "English name": "Great barracuda",
+    " Slope ": -11.69070725,
+    " Intercept ": 2.913470549
+  },
+  {
+    "English name": "Great hammerheadshark",
+    " Slope ": -10.97926044,
+    " Intercept ": 2.944046974
+  },
+  {
+    "English name": "Great white shark",
+    " Slope ": -10.75166035,
+    " Intercept ": 2.94391489
+  },
+  {
+    "English name": "Greater yellowtail / Amberjack",
+    " Slope ": -10.613576143436712,
+    " Intercept ": 2.9303214551465566
+  },
+  {
+    "English name": "Green jobfish",
+    " Slope ": -10.43450634,
+    " Intercept ": 2.759998047
+  },
+  {
+    "English name": "Grey chub",
+    " Slope ": -10.4987402,
+    " Intercept ": 2.85947299
+  },
+  {
+    "English name": "Grey grunter",
+    " Slope ": -10.41281986,
+    " Intercept ": 2.839692116
+  },
+  {
+    "English name": "Greyspot guitarfish",
+    " Slope ": -10.72929955,
+    " Intercept ": 2.561811924
+  },
+  {
+    "English name": "Halfmoon rockcod",
+    " Slope ": -10.91030025,
+    " Intercept ": 2.967303038
+  },
+  {
+    "English name": "Hardnosed smooth-houndshark",
+    " Slope ": -14.8193903,
+    " Intercept ": 3.5015769
+  },
+  {
+    "English name": "Honeycomb stingray",
+    " Slope ": -9.153886795,
+    " Intercept ": 2.712804079
+  },
+  {
+    "English name": "Hottentot",
+    " Slope ": -10.46722984,
+    " Intercept ": 2.966594934
+  },
+  {
+    "English name": "Humpback snapper",
+    " Slope ": -11.24155045,
+    " Intercept ": 3.137221098
+  },
+  {
+    "English name": "Indian goatfish",
+    " Slope ": -11.09665966,
+    " Intercept ": 3.087508917
+  },
+  {
+    "English name": "Indian mackerel",
+    " Slope ": -11.96550294,
+    " Intercept ": 3.170004373
+  },
+  {
+    "English name": "Indian mirrorfish",
+    " Slope ": -9.80172522,
+    " Intercept ": 2.640677
+  },
+  {
+    "English name": "Janbruin / John Brown",
+    " Slope ": -10.84992981,
+    " Intercept ": 2.984142065
+  },
+  {
+    "English name": "Java shark",
+    " Slope ": -10.43056965,
+    " Intercept ": 2.930546999
+  },
+  {
+    "English name": "Javelin grunter",
+    " Slope ": -10.29008007,
+    " Intercept ": 2.712771893
+  },
+  {
+    "English name": "Karanteen / Strepie",
+    " Slope ": -11.31787786,
+    " Intercept ": 3.180003552
+  },
+  {
+    "English name": "King mackerel / Couta",
+    " Slope ": -12.93945026,
+    " Intercept ": 3.252603054
+  },
+  {
+    "English name": "King soldierbream",
+    " Slope ": -9.435992316,
+    " Intercept ": 2.657001083
+  },
+  {
+    "English name": "Klipvis",
+    " Slope ": -10.97628975,
+    " Intercept ": 3.035970926
+  },
+  {
+    "English name": "Ladder wrasse",
+    " Slope ": -11.165960309999999,
+    " Intercept ": 3.007407904
+  },
+  {
+    "English name": "Largespot pompano",
+    " Slope ": -10.84959984,
+    " Intercept ": 2.944704056
+  },
+  {
+    "English name": "Largetooth flounder",
+    " Slope ": -11.90448041,
+    " Intercept ": 3.075998458
+  },
+  {
+    "English name": "Leervis / Garrick",
+    " Slope ": -13.019409009714938,
+    " Intercept ": 3.391500000000001
+  },
+  {
+    "English name": "Lemon shark",
+    " Slope ": -10.9772907,
+    " Intercept ": 3.003881802
+  },
+  {
+    "English name": "Lemonfish",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "Leopard catshark",
+    " Slope ": -11.73612022,
+    " Intercept ": 2.92
+  },
+  {
+    "English name": "Lesser guitarfish / Sandshark",
+    " Slope ": -13.31268978,
+    " Intercept ": 3.177809954
+  },
+  {
+    "English name": "Longfin kingfish",
+    " Slope ": -11.37750619,
+    " Intercept ": 3.126157
+  },
+  {
+    "English name": "Longfin yellowtail",
+    " Slope ": -11.14533043,
+    " Intercept ": 3.055823088
+  },
+  {
+    "English name": "Mackerel",
+    " Slope ": -12.22801971,
+    " Intercept ": 3.311351061
+  },
+  {
+    "English name": "Malabar kingfish",
+    " Slope ": -10.48466698,
+    " Intercept ": 2.9200343
+  },
+  {
+    "English name": "Malabar rockcod",
+    " Slope ": -11.26603435,
+    " Intercept ": 3.029993548
+  },
+  {
+    "English name": "Marbled electric ray",
+    " Slope ": -9.804895401,
+    " Intercept ": 2.807568073
+  },
+  {
+    "English name": "Marbled hawkfish",
+    " Slope ": -10.753063912345311,
+    " Intercept ": 3
+  },
+  {
+    "English name": "Milkfish",
+    " Slope ": -11.82630077,
+    " Intercept ": 3.251006967
+  },
+  {
+    "English name": "Milkshark (Female)",
+    " Slope ": -11.72862571,
+    " Intercept ": 3.056938858
+  },
+  {
+    "English name": "Milkshark (Male)",
+    " Slope ": -11.72862571,
+    " Intercept ": 3.056938858
+  },
+  {
+    "English name": "Minstrel rubberlip",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "Natal fingerfin",
+    " Slope ": -11.06046963,
+    " Intercept ": 2.977108002
+  },
+  {
+    "English name": "Natal knifejaw",
+    " Slope ": -8.629741669,
+    " Intercept ": 2.479295969
+  },
+  {
+    "English name": "Natal moony",
+    " Slope ": -10.40303156,
+    " Intercept ": 2.964097522
+  },
+  {
+    "English name": "Natal stumpnose",
+    " Slope ": -9.575611766,
+    " Intercept ": 2.680001572
+  },
+  {
+    "English name": "Natal wrasse",
+    " Slope ": -11.165960309999999,
+    " Intercept ": 3.007407904
+  },
+  {
+    "English name": "Old Woman",
+    " Slope ": -10.85877991,
+    " Intercept ": 2.970304012
+  },
+  {
+    "English name": "Oxeye tarpon",
+    " Slope ": -11.31407461,
+    " Intercept ": 3.033
+  },
+  {
+    "English name": "Panga",
+    " Slope ": -10.7483975,
+    " Intercept ": 3.030999847
+  },
+  {
+    "English name": "Patchy triggerfish",
+    " Slope ": -10.24499035,
+    " Intercept ": 2.874799967
+  },
+  {
+    "English name": "Piggy",
+    " Slope ": -10.03312016,
+    " Intercept ": 2.702342033
+  },
+  {
+    "English name": "Porcupinefish",
+    " Slope ": -8.161070824,
+    " Intercept ": 2.344594955
+  },
+  {
+    "English name": "Potato bass",
+    " Slope ": -9.15223217,
+    " Intercept ": 2.560028076
+  },
+  {
+    "English name": "Prodigal Son / Cobia",
+    " Slope ": -12.08916687,
+    " Intercept ": 3.159997553
+  },
+  {
+    "English name": "Puffadder shyshark",
+    " Slope ": -11.970011661732626,
+    " Intercept ": 2.971470681793536
+  },
+  {
+    "English name": "Queen mackerel",
+    " Slope ": -11.41833019,
+    " Intercept ": 2.941289902
+  },
+  {
+    "English name": "Rainbow Runner",
+    " Slope ": -11.2153101,
+    " Intercept ": 2.920517921
+  },
+  {
+    "English name": "Red steenbras",
+    " Slope ": -10.63455963,
+    " Intercept ": 2.952753067
+  },
+  {
+    "English name": "Red stumpnose / Miss Lucy",
+    " Slope ": -10.05760956,
+    " Intercept ": 2.892155886
+  },
+  {
+    "English name": "Red tjor-tjor",
+    " Slope ": -11.91059017,
+    " Intercept ": 3.379415035
+  },
+  {
+    "English name": "Redlip rubberlip",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "Remora",
+    " Slope ": -12.38527434,
+    " Intercept ": 3.000015677
+  },
+  {
+    "English name": "River / Mangrove snapper",
+    " Slope ": -7.397116184,
+    " Intercept ": 2.210448027
+  },
+  {
+    "English name": "River bream / Perch",
+    " Slope ": -10.64582498,
+    " Intercept ": 3.022
+  },
+  {
+    "English name": "Roman",
+    " Slope ": -10.97504044,
+    " Intercept ": 3.153796911
+  },
+  {
+    "English name": "Round ribbontail ray",
+    " Slope ": -9.153886795,
+    " Intercept ": 2.712804079
+  },
+  {
+    "English name": "Russell's snapper",
+    " Slope ": -11.00728209,
+    " Intercept ": 2.977883463
+  },
+  {
+    "English name": "Saddle grunter",
+    " Slope ": -10.75699043,
+    " Intercept ": 2.899035931
+  },
+  {
+    "English name": "Sailfish",
+    " Slope ": -11.06186602,
+    " Intercept ": 2.819003397
+  },
+  {
+    "English name": "Sand steenbras",
+    " Slope ": -11.27960228,
+    " Intercept ": 3.0630939
+  },
+  {
+    "English name": "Sandbar shark (Female)",
+    " Slope ": -11.77966022,
+    " Intercept ": 3.170077085
+  },
+  {
+    "English name": "Sandbar shark (Male)",
+    " Slope ": -11.48738956,
+    " Intercept ": 3.090497971
+  },
+  {
+    "English name": "Santer",
+    " Slope ": -9.32266217,
+    " Intercept ": 2.570996097
+  },
+  {
+    "English name": "Scalloped hammerheadshark (Female)",
+    " Slope ": -11.5104599,
+    " Intercept ": 3.069519997
+  },
+  {
+    "English name": "Scalloped hammerheadshark (Male)",
+    " Slope ": -11.10394955,
+    " Intercept ": 2.979325056
+  },
+  {
+    "English name": "Scotsman",
+    " Slope ": -10.17846012,
+    " Intercept ": 2.810271978
+  },
+  {
+    "English name": "Sevengill cowshark",
+    " Slope ": -12.62215996,
+    " Intercept ": 3.280111074
+  },
+  {
+    "English name": "Seventy-four",
+    " Slope ": -9.663599416,
+    " Intercept ": 2.662591822
+  },
+  {
+    "English name": "Shallow-water sole",
+    " Slope ": -11.82723045,
+    " Intercept ": 3.070030928
+  },
+  {
+    "English name": "Sharpnose brown stingray",
+    " Slope ": -9.317486763,
+    " Intercept ": 2.750916004
+  },
+  {
+    "English name": "Shortfin mako shark",
+    " Slope ": -11.12766306,
+    " Intercept ": 2.98
+  },
+  {
+    "English name": "Shorttail stingray / Black stingray",
+    " Slope ": -9.654700279,
+    " Intercept ": 2.870229959
+  },
+  {
+    "English name": "Silverstripe blaasop",
+    " Slope ": -10.91246898,
+    " Intercept ": 2.923995568
+  },
+  {
+    "English name": "Skipjack tuna / Oceanic Bonito",
+    " Slope ": -12.24932003,
+    " Intercept ": 3.377445936
+  },
+  {
+    "English name": "Slimy",
+    " Slope ": -10.51998997,
+    " Intercept ": 2.979665995
+  },
+  {
+    "English name": "Slinger",
+    " Slope ": -9.950784683,
+    " Intercept ": 2.819475889
+  },
+  {
+    "English name": "Small kob",
+    " Slope ": -12.04582381,
+    " Intercept ": 3.279993075
+  },
+  {
+    "English name": "Smooth blaasop",
+    " Slope ": -10.74396888,
+    " Intercept ": 2.9448
+  },
+  {
+    "English name": "Smooth hammerheadshark (Female)",
+    " Slope ": -11.61642856,
+    " Intercept ": 3.085366633
+  },
+  {
+    "English name": "Smooth hammerheadshark (Male)",
+    " Slope ": -11.21096346,
+    " Intercept ": 2.995366633
+  },
+  {
+    "English name": "Smooth houndshark (Female)",
+    " Slope ": -14.8193903,
+    " Intercept ": 3.5015769
+  },
+  {
+    "English name": "Smooth houndshark (Male)",
+    " Slope ": -13.38910007,
+    " Intercept ": 3.189629078
+  },
+  {
+    "English name": "Snapper kob",
+    " Slope ": -11.91613007,
+    " Intercept ": 3.129451036
+  },
+  {
+    "English name": "Snoek",
+    " Slope ": -11.85997963,
+    " Intercept ": 3.069457054
+  },
+  {
+    "English name": "Snubnose pompano",
+    " Slope ": -7.522987605,
+    " Intercept ": 2.252003003
+  },
+  {
+    "English name": "Soupfin shark / Tope",
+    " Slope ": -8.310648918,
+    " Intercept ": 2.319703102
+  },
+  {
+    "English name": "Southern mullet",
+    " Slope ": -11.36104012,
+    " Intercept ": 3.065074921
+  },
+  {
+    "English name": "Southern pompano",
+    " Slope ": -10.4811339,
+    " Intercept ": 2.887
+  },
+  {
+    "English name": "Spadefish",
+    " Slope ": -19.6562583130141,
+    " Intercept ": 5.29175691774746
+  },
+  {
+    "English name": "Spearnose skate",
+    " Slope ": -12.37351036,
+    " Intercept ": 3.160566092
+  },
+  {
+    "English name": "Speckled snapper",
+    " Slope ": -11.68373796,
+    " Intercept ": 3.260165012
+  },
+  {
+    "English name": "Spineblotch scorpionfish",
+    " Slope ": -10.87395,
+    " Intercept ": 3.010509968
+  },
+  {
+    "English name": "Spinner shark (Female)",
+    " Slope ": -11.83144205,
+    " Intercept ": 3.1627
+  },
+  {
+    "English name": "Spinner shark (Male)",
+    " Slope ": -11.64463785,
+    " Intercept ": 3.0977
+  },
+  {
+    "English name": "Spiny dogfish",
+    " Slope ": -13.43025495,
+    " Intercept ": 3.219990589
+  },
+  {
+    "English name": "Spotted eagle ray",
+    " Slope ": -12.04735391,
+    " Intercept ": 3.129998498
+  },
+  {
+    "English name": "Spotted grunter",
+    " Slope ": -11.12304584,
+    " Intercept ": 2.970594241
+  },
+  {
+    "English name": "Spotted gullyshark",
+    " Slope ": -14.33193016,
+    " Intercept ": 3.430449963
+  },
+  {
+    "English name": "Spotted ragged-tooth shark (Female)",
+    " Slope ": -12.01518538,
+    " Intercept ": 3.217362935
+  },
+  {
+    "English name": "Spotted ragged-tooth shark (Male)",
+    " Slope ": -11.41074324,
+    " Intercept ": 3.078114933
+  },
+  {
+    "English name": "Springer",
+    " Slope ": -11.84140076,
+    " Intercept ": 3.052694005
+  },
+  {
+    "English name": "Squaretail kob",
+    " Slope ": -11.0719099,
+    " Intercept ": 2.889766932
+  },
+  {
+    "English name": "Star blaasop",
+    " Slope ": -9.29916161,
+    " Intercept ": 2.67238793
+  },
+  {
+    "English name": "Steentjie",
+    " Slope ": -10.74057779,
+    " Intercept ": 3.037413954
+  },
+  {
+    "English name": "Stone bream",
+    " Slope ": -10.99118996,
+    " Intercept ": 3.079790115
+  },
+  {
+    "English name": "Streakyspot rockcod",
+    " Slope ": -11.11575031,
+    " Intercept ": 3.017632008
+  },
+  {
+    "English name": "Striped bonito",
+    " Slope ": -10.73902988,
+    " Intercept ": 2.870177031
+  },
+  {
+    "English name": "Striped catshark",
+    " Slope ": -11.90907001,
+    " Intercept ": 2.958318949
+  },
+  {
+    "English name": "Striped grunter",
+    " Slope ": -10.51967369,
+    " Intercept ": 2.8609
+  },
+  {
+    "English name": "Striped marlin",
+    " Slope ": -7.663268501,
+    " Intercept ": 2.199996862
+  },
+  {
+    "English name": "Striped mullet",
+    " Slope ": -11.36104012,
+    " Intercept ": 3.065074921
+  },
+  {
+    "English name": "Striped threadfin",
+    " Slope ": -10.8985363,
+    " Intercept ": 2.997683594
+  },
+  {
+    "English name": "Surge wrasse",
+    " Slope ": -11.165960309999999,
+    " Intercept ": 3.007407904
+  },
+  {
+    "English name": "Talang queenfish",
+    " Slope ": -10.4296999,
+    " Intercept ": 2.808700085
+  },
+  {
+    "English name": "Thintail thresher",
+    " Slope ": -10.03355026,
+    " Intercept ": 2.856935024
+  },
+  {
+    "English name": "Thornback skate",
+    " Slope ": -12.37351036,
+    " Intercept ": 3.160566092
+  },
+  {
+    "English name": "Thornfish",
+    " Slope ": -11.08113038,
+    " Intercept ": 3.081997392
+  },
+  {
+    "English name": "Thorntail stingray",
+    " Slope ": -10.80140972,
+    " Intercept ": 2.99932909
+  },
+  {
+    "English name": "Threadfin mirrorfish",
+    " Slope ": -10.09704883,
+    " Intercept ": 2.849995135
+  },
+  {
+    "English name": "Tiger catshark",
+    " Slope ": -12.89350986,
+    " Intercept ": 3.048912048
+  },
+  {
+    "English name": "Tiger shark (Female)",
+    " Slope ": -11.86960041,
+    " Intercept ": 3.124
+  },
+  {
+    "English name": "Tiger shark (Male)",
+    " Slope ": -12.02375109,
+    " Intercept ": 3.141
+  },
+  {
+    "English name": "Tille kingfish",
+    " Slope ": -11.64500046,
+    " Intercept ": 3.163870096
+  },
+  {
+    "English name": "Torpedo scad",
+    " Slope ": -9.962116241,
+    " Intercept ": 2.581084967
+  },
+  {
+    "English name": "Tripletail",
+    " Slope ": -10.05537987,
+    " Intercept ": 2.839261055
+  },
+  {
+    "English name": "Twobar bream",
+    " Slope ": -10.15195066,
+    " Intercept ": 2.910000367
+  },
+  {
+    "English name": "Twotone fingerfin",
+    " Slope ": -11.06046963,
+    " Intercept ": 2.977108002
+  },
+  {
+    "English name": "Wahoo",
+    " Slope ": -12.89534182,
+    " Intercept ": 3.190023619
+  },
+  {
+    "English name": "Westcoast steenbras",
+    " Slope ": -10.54615021,
+    " Intercept ": 2.945183992
+  },
+  {
+    "English name": "White kingfish",
+    " Slope ": -11.21354961,
+    " Intercept ": 3.064146996
+  },
+  {
+    "English name": "White musselcracker",
+    " Slope ": -10.84058952,
+    " Intercept ": 3.037132025
+  },
+  {
+    "English name": "White seacatfish / Sea barbel",
+    " Slope ": -11.09877968,
+    " Intercept ": 3.040005922
+  },
+  {
+    "English name": "White steenbras",
+    " Slope ": -11.13979326,
+    " Intercept ": 3.031065185
+  },
+  {
+    "English name": "White stumpnose",
+    " Slope ": -11.01552963,
+    " Intercept ": 3.078875065
+  },
+  {
+    "English name": "Whitebarred rubberlip",
+    " Slope ": -10.77190018,
+    " Intercept ": 2.946597099
+  },
+  {
+    "English name": "White-edged rockcod / Captain Fine",
+    " Slope ": -11.44960763,
+    " Intercept ": 3.085002615
+  },
+  {
+    "English name": "Whitespotted blaasop",
+    " Slope ": -9.772453721,
+    " Intercept ": 2.800998837
+  },
+  {
+    "English name": "Whitespotted rabbitfish",
+    " Slope ": -9.730881691,
+    " Intercept ": 2.756633997
+  },
+  {
+    "English name": "Wolfherring",
+    " Slope ": -12.18833307,
+    " Intercept ": 2.987190766
+  },
+  {
+    "English name": "Yellowbelly rockcod",
+    " Slope ": -11.16611958,
+    " Intercept ": 3.055620909
+  },
+  {
+    "English name": "Yellowfin emperor",
+    " Slope ": -10.74213982,
+    " Intercept ": 2.950612068
+  },
+  {
+    "English name": "Yellowfin tuna",
+    " Slope ": -10.74747225,
+    " Intercept ": 2.976003045
+  },
+  {
+    "English name": "Yellowspotted kingfish",
+    " Slope ": -9.984062195,
+    " Intercept ": 2.704864979
+  },
+  {
+    "English name": "Yellowtail rockcod",
+    " Slope ": -11.07188034,
+    " Intercept ": 3.000761986
+  },
+  {
+    "English name": "Zebra",
+    " Slope ": -10.9492374,
+    " Intercept ": 3.1409986
+  }
+]
