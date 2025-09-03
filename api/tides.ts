@@ -19,8 +19,42 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   try {
     const { lat, lon, start, length = '86400' } = req.query;
 
+    // Comprehensive parameter validation
+    console.log('Received parameters:', { lat, lon, start, length });
+
     if (!lat || !lon) {
       return res.status(400).json({ error: 'Latitude and longitude are required' });
+    }
+
+    // Validate coordinate ranges
+    const latNum = parseFloat(lat.toString());
+    const lonNum = parseFloat(lon.toString());
+    
+    if (isNaN(latNum) || isNaN(lonNum)) {
+      return res.status(400).json({ error: 'Invalid coordinates - must be numbers' });
+    }
+    
+    if (latNum < -90 || latNum > 90) {
+      return res.status(400).json({ error: 'Latitude must be between -90 and 90' });
+    }
+    
+    if (lonNum < -180 || lonNum > 180) {
+      return res.status(400).json({ error: 'Longitude must be between -180 and 180' });
+    }
+
+    // Validate start parameter
+    let startNum: number | undefined;
+    if (start) {
+      startNum = parseInt(start.toString());
+      if (isNaN(startNum) || startNum < 0) {
+        return res.status(400).json({ error: 'Start parameter must be a positive integer' });
+      }
+    }
+
+    // Validate length parameter
+    const lengthNum = parseInt(length.toString());
+    if (isNaN(lengthNum) || lengthNum <= 0) {
+      return res.status(400).json({ error: 'Length parameter must be a positive integer' });
     }
 
     const apiKey = process.env.VITE_WORLDTIDES_API_KEY;
@@ -28,27 +62,36 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       return res.status(500).json({ error: 'WorldTides API key not configured' });
     }
 
+    // Check API key format (should be 32 characters)
+    if (apiKey.length !== 32) {
+      console.error('API key length is incorrect:', apiKey.length);
+      return res.status(500).json({ error: 'WorldTides API key format is invalid' });
+    }
+
     // Build URL with all required parameters
     const params = new URLSearchParams({
       heights: '',
       extremes: '',
-      lat: lat.toString(),
-      lon: lon.toString(),
+      lat: latNum.toString(),
+      lon: lonNum.toString(),
       key: apiKey
     });
 
-    if (start) {
-      params.append('start', start.toString());
+    if (startNum !== undefined) {
+      params.append('start', startNum.toString());
     }
-    if (length) {
-      params.append('length', length.toString());
+    if (lengthNum) {
+      params.append('length', lengthNum.toString());
     }
 
     const url = `https://www.worldtides.info/api/v3?${params.toString()}`;
 
     console.log('WorldTides API Request:', {
       url: url.replace(apiKey, '***HIDDEN***'),
-      params: Object.fromEntries(params.entries())
+      params: Object.fromEntries(params.entries()),
+      coordinates: { lat: latNum, lon: lonNum },
+      start: startNum,
+      length: lengthNum
     });
 
     const response = await fetch(url);
@@ -58,15 +101,30 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       console.error('WorldTides API Error:', {
         status: response.status,
         statusText: response.statusText,
-        error: errorData
+        error: errorData,
+        requestUrl: url.replace(apiKey, '***HIDDEN***'),
+        requestParams: Object.fromEntries(params.entries())
       });
       return res.status(response.status).json({ 
         error: `WorldTides API error: ${response.status} - ${errorData.error || 'Unknown error'}`,
-        details: errorData
+        details: errorData,
+        requestParams: {
+          lat: latNum,
+          lon: lonNum,
+          start: startNum,
+          length: lengthNum
+        }
       });
     }
 
     const data = await response.json();
+    console.log('WorldTides API Success:', {
+      status: response.status,
+      dataKeys: Object.keys(data),
+      extremesCount: data.extremes?.length || 0,
+      heightsCount: data.heights?.length || 0
+    });
+    
     res.status(200).json(data);
 
   } catch (error) {

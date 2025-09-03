@@ -104,6 +104,14 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
       const dateObj = new Date(date)
       const start = Math.floor(dateObj.getTime() / 1000)
       
+      console.log('Tide API Request:', {
+        date: date,
+        dateObj: dateObj.toISOString(),
+        start: start,
+        location: location.name,
+        coordinates: location.coordinates
+      })
+      
       const response = await fetch(
         `/api/tides?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&start=${start}&length=86400`
       )
