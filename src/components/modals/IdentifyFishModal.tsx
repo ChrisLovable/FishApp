@@ -12,11 +12,15 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
   const [identificationResult, setIdentificationResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [showAlternatives, setShowAlternatives] = useState(true)
+  const [debugInfo, setDebugInfo] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
+      const debugData = `File: ${file.name}, Type: ${file.type}, Size: ${(file.size / (1024 * 1024)).toFixed(2)}MB, UA: ${navigator.userAgent.substring(0, 50)}...`
+      setDebugInfo(debugData)
+      
       console.log('File selected on mobile:', {
         name: file.name,
         type: file.type,
@@ -99,6 +103,9 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
         startsWith: apiKey?.substring(0, 3) || 'N/A'
       })
       
+      // Also show on screen for mobile debugging
+      setError(`Debug: API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0}`)
+      
       if (!apiKey) {
         throw new Error('OpenAI API key not found. Please check your environment configuration.')
       }
@@ -106,10 +113,12 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
       // Call OpenAI Vision API
       const result = await identifyFishWithOpenAI(selectedImage)
       setIdentificationResult(result)
+      setError(null) // Clear debug message on success
       
     } catch (err) {
       console.error('Fish identification error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to identify fish. Please try again.')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to identify fish. Please try again.'
+      setError(`Error: ${errorMessage}`)
     } finally {
       setIsAnalyzing(false)
     }
@@ -216,12 +225,19 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                 )}
               </div>
 
-              {/* Error Display */}
-              {error && (
-                <div className="bg-red-900/30 rounded-lg border border-red-500/50 p-4">
-                  <p className="text-red-200">{error}</p>
-                </div>
-              )}
+                             {/* Debug Info Display */}
+               {debugInfo && (
+                 <div className="bg-blue-900/30 rounded-lg border border-blue-500/50 p-4">
+                   <p className="text-blue-200 text-xs">Debug: {debugInfo}</p>
+                 </div>
+               )}
+
+               {/* Error Display */}
+               {error && (
+                 <div className="bg-red-900/30 rounded-lg border border-red-500/50 p-4">
+                   <p className="text-red-200">{error}</p>
+                 </div>
+               )}
 
               {/* Analysis Progress */}
               {isAnalyzing && (

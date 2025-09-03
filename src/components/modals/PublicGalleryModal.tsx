@@ -67,10 +67,9 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
 
   // Load catches from Supabase
   const loadCatches = async () => {
-    // FORCE DUMMY DATA FOR NOW - NO SUPABASE
-    console.log('🚫 Using dummy data for Public Gallery (Supabase disabled)')
-    console.log('📊 Loading 5 dummy catch records...')
-    // Use dummy data when Supabase is not configured
+    if (!supabase) {
+      console.log('🚫 Supabase not configured, using dummy data')
+      // Use dummy data when Supabase is not configured
       const dummyCatches: CatchData[] = [
         {
           id: 1,
@@ -157,9 +156,57 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
           user_id: 'dummy_user_5',
           created_at: new Date(Date.now() - 432000000).toISOString()
         }
-              ]
-        console.log('✅ Loaded dummy catches:', dummyCatches.length, 'catches')
+      ]
+      console.log('✅ Loaded dummy catches:', dummyCatches.length, 'catches')
+      setCatches(dummyCatches)
+      return
+    }
+
+    // Load real data from Supabase
+    try {
+      console.log('📊 Loading catches from Supabase...')
+      const { data: supabaseCatches, error } = await supabase
+        .from('public_gallery')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error loading catches from Supabase:', error)
+        alert('Error loading catches: ' + error.message)
+        return
+      }
+
+      if (supabaseCatches && supabaseCatches.length > 0) {
+        console.log('✅ Loaded', supabaseCatches.length, 'catches from Supabase')
+        setCatches(supabaseCatches)
+      } else {
+        console.log('📭 No catches found in Supabase, using dummy data')
+        // Use dummy data if no real data exists
+        const dummyCatches: CatchData[] = [
+          {
+            id: 1,
+            angler_name: 'Mike Johnson',
+            species: 'Common / Dusky kob',
+            date_caught: '2024-01-15',
+            location: 'Cape Town Harbour',
+            bait_used: 'Live mullet',
+            length_cm: 85,
+            weight_kg: 12.5,
+            weather_conditions: 'Sunny, light wind',
+            tide_state: 'High Tide',
+            moon_phase: 'Waxing Gibbous',
+            notes: 'Caught this beauty early morning on live bait. Fought hard for about 15 minutes. Great eating fish!',
+            image_url: '/images/fish/common-kob.jpg',
+            user_id: 'dummy_user_1',
+            created_at: new Date(Date.now() - 86400000).toISOString()
+          }
+        ]
         setCatches(dummyCatches)
+      }
+    } catch (error) {
+      console.error('Error in loadCatches:', error)
+      alert('Error loading catches. Please try again.')
+    }
   }
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
