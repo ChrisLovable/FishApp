@@ -91,13 +91,16 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
       }
 
       // Call OpenAI Vision API
+      setDebugInfo(`API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0} - Making API call...`)
       const result = await identifyFishWithOpenAI(selectedImage)
       setIdentificationResult(result)
+      setDebugInfo('API call successful!')
       setError(null) // Clear debug message on success
       
     } catch (err) {
       console.error('Fish identification error:', err)
       const errorMessage = err instanceof Error ? err.message : 'Failed to identify fish. Please try again.'
+      setDebugInfo(`API call failed: ${errorMessage}`)
       setError(`Error: ${errorMessage}`)
     } finally {
       setIsAnalyzing(false)
