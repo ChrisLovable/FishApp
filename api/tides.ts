@@ -63,9 +63,19 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     }
 
     // Check API key format (should be 32 characters)
+    console.log('API Key Debug:', {
+      exists: !!apiKey,
+      length: apiKey.length,
+      expectedLength: 32,
+      firstChars: apiKey.substring(0, 4) + '...',
+      lastChars: '...' + apiKey.substring(apiKey.length - 4)
+    });
+    
     if (apiKey.length !== 32) {
       console.error('API key length is incorrect:', apiKey.length);
-      return res.status(500).json({ error: 'WorldTides API key format is invalid' });
+      return res.status(500).json({ 
+        error: `WorldTides API key format is invalid. Expected 32 characters, got ${apiKey.length}. Please check your VITE_WORLDTIDES_API_KEY environment variable.` 
+      });
     }
 
     // Build URL with all required parameters
