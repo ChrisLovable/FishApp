@@ -24,7 +24,7 @@
 
 /* Ensure modals take full available space */
 .modal-content {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: #000000;
   border: 1px solid #475569;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
