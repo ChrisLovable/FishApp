@@ -11,7 +11,7 @@ const PublicGalleryButton = ({ onClick }: PublicGalleryButtonProps) => {
       aria-label="Public Gallery"
     >
       <div className="text-2xl mr-3">🌐</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         Public Gallery
       </div>
     </button>

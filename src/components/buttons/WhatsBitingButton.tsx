@@ -11,7 +11,7 @@ const WhatsBitingButton = ({ onClick }: WhatsBitingButtonProps) => {
       aria-label="What's biting where?"
     >
       <div className="text-2xl mr-3">🎣</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         What's biting where?
       </div>
     </button>

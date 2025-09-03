@@ -11,7 +11,7 @@ const LengthToWeightButton = ({ onClick }: LengthToWeightButtonProps) => {
       aria-label="Length to Weight Calculator"
     >
       <div className="text-2xl mr-3">📏</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         Length-to-Weight
       </div>
     </button>

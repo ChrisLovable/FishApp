@@ -11,7 +11,7 @@ const CompetitionPointsButton = ({ onClick }: CompetitionPointsButtonProps) => {
       aria-label="Competition Points Calculator"
     >
       <div className="text-2xl mr-3">🏆</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         Points Calculator
       </div>
     </button>

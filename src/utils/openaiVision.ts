@@ -52,6 +52,8 @@ export const identifyFishWithOpenAI = async (imageBase64: string): Promise<FishI
   
   console.log('🔍 Starting fish identification...')
   console.log('🔑 API Key available:', !!apiKey)
+  console.log('📱 User Agent:', navigator.userAgent)
+  console.log('🌐 Network Status:', navigator.onLine ? 'Online' : 'Offline')
   
   if (!apiKey) {
     console.error('❌ OpenAI API key not found')
@@ -117,12 +119,20 @@ If the image is unclear, doesn't show a fish, or shows a non-South African speci
 Be extremely careful with shark identification - many species look similar but have key differences.`
 
   try {
+    console.log('📡 Making API request to OpenAI...')
+    console.log('📊 Image size (compressed):', (base64Data.length * 0.75 / 1024).toFixed(2), 'KB')
+    
+    // Create AbortController for timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 second timeout
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model: 'gpt-4o',
         messages: [
@@ -148,8 +158,18 @@ Be extremely careful with shark identification - many species look similar but h
       })
     })
 
+    // Clear timeout since request completed
+    clearTimeout(timeoutId)
+    
+    console.log('📡 Response status:', response.status, response.statusText)
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
+      console.error('❌ API Error Details:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      })
       throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`)
     }
 
@@ -213,6 +233,18 @@ Be extremely careful with shark identification - many species look similar but h
 
   } catch (error) {
     console.error('OpenAI Vision API error:', error)
+    
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out. Please check your internet connection and try again.')
+      } else if (error.message.includes('Failed to fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.')
+      } else if (error.message.includes('API key')) {
+        throw new Error('API key error. Please check your configuration.')
+      }
+    }
+    
     throw new Error(`Failed to identify fish: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

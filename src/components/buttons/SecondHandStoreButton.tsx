@@ -11,7 +11,7 @@ const SecondHandStoreButton = ({ onClick }: SecondHandStoreButtonProps) => {
       aria-label="Second-Hand Store"
     >
       <div className="text-2xl mr-3">🛒</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         Second-Hand Store
       </div>
     </button>

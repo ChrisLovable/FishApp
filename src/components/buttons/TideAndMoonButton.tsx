@@ -11,7 +11,7 @@ const TideAndMoonButton = ({ onClick }: TideAndMoonButtonProps) => {
       aria-label="Tide, Moon & Weather"
     >
       <div className="text-2xl mr-3">🌊🌙</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         Tide, Moon & Weather
       </div>
     </button>

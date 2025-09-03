@@ -11,7 +11,7 @@ const SpeciesInfoButton = ({ onClick }: SpeciesInfoButtonProps) => {
       aria-label="Species Information"
     >
       <div className="text-2xl mr-3">🐠</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         Species Information
       </div>
     </button>

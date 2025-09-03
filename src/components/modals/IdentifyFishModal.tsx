@@ -17,6 +17,14 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
+      console.log('File selected on mobile:', {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        sizeMB: (file.size / (1024 * 1024)).toFixed(2),
+        userAgent: navigator.userAgent
+      })
+      
       // Check file type - support all common mobile gallery formats
       const supportedTypes = [
         'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 
@@ -38,14 +46,41 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
         setSelectedImage(result)
         
         // Log image info for debugging
-        console.log('Image selected:', {
+        console.log('Image processed successfully:', {
           name: file.name,
           type: file.type,
           size: file.size,
-          sizeMB: (file.size / (1024 * 1024)).toFixed(2)
+          sizeMB: (file.size / (1024 * 1024)).toFixed(2),
+          base64Length: result.length
         })
       }
+      reader.onerror = (error) => {
+        console.error('FileReader error:', error)
+        setError('Failed to process the selected image. Please try again.')
+      }
       reader.readAsDataURL(file)
+    }
+  }
+
+  const handleChoosePhoto = () => {
+    // Force file input to open gallery on mobile
+    if (fileInputRef.current) {
+      // Clear any previous value to ensure fresh selection
+      fileInputRef.current.value = ''
+      
+      // On mobile devices, try to force gallery selection
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      
+      if (isMobile) {
+        // For mobile, we'll try to ensure it opens gallery by setting specific attributes
+        fileInputRef.current.setAttribute('capture', 'none')
+        fileInputRef.current.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp')
+      }
+      
+      // Trigger click with a small delay to ensure proper handling
+      setTimeout(() => {
+        fileInputRef.current?.click()
+      }, 100)
     }
   }
 
@@ -56,6 +91,18 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
     setError(null)
 
     try {
+      // Check API key availability
+      const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+      console.log('🔑 API Key check:', {
+        exists: !!apiKey,
+        length: apiKey?.length || 0,
+        startsWith: apiKey?.substring(0, 3) || 'N/A'
+      })
+      
+      if (!apiKey) {
+        throw new Error('OpenAI API key not found. Please check your environment configuration.')
+      }
+
       // Call OpenAI Vision API
       const result = await identifyFishWithOpenAI(selectedImage)
       setIdentificationResult(result)
@@ -119,13 +166,14 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                           accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp"
                           onChange={handleImageSelect}
                           className="hidden"
+                          style={{ display: 'none' }}
                         />
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                      >
-                        Choose Photo
-                      </button>
+                                             <button
+                         onClick={handleChoosePhoto}
+                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                       >
+                         Choose Photo
+                       </button>
                     </div>
                     <p className="text-sm text-gray-400">
                       Upload a clear photo of the fish for best identification results

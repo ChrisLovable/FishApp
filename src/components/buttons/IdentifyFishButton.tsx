@@ -11,7 +11,7 @@ const IdentifyFishButton = ({ onClick }: IdentifyFishButtonProps) => {
       aria-label="Identify a Fish"
     >
       <div className="text-2xl mr-3">🔍</div>
-              <div className="text-2xl font-semibold">
+              <div className="text-lg font-semibold">
         Identify a Fish
       </div>
     </button>
