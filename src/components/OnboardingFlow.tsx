@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import EmailVerificationModal from './modals/EmailVerificationModal'
+import { logger } from '../utils/logger'
 
 interface OnboardingFlowProps {
   children: React.ReactNode
@@ -28,6 +29,10 @@ export default function OnboardingFlow({ children }: OnboardingFlowProps) {
     setVerifiedEmail(email)
     setShowEmailVerification(false)
     setIsOnboardingComplete(true)
+    
+    // Set user email in logger for error tracking
+    logger.setUserEmail(email)
+    
     // No PWA install prompt - just show the app
   }
 
