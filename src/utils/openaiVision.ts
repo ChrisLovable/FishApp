@@ -121,6 +121,31 @@ Be extremely careful with shark identification - many species look similar but h
   try {
     console.log('📡 Making API request to OpenAI...')
     console.log('📊 Image size (compressed):', (base64Data.length * 0.75 / 1024).toFixed(2), 'KB')
+    console.log('🔑 API Key first 10 chars:', apiKey.substring(0, 10) + '...')
+    console.log('🔑 API Key last 10 chars:', '...' + apiKey.substring(apiKey.length - 10))
+    console.log('📝 Request body size:', JSON.stringify({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: prompt.substring(0, 100) + '...'
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Data.substring(0, 50)}...`,
+                detail: 'high'
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 1500,
+      temperature: 0.05
+    }).length, 'bytes')
     
     // Create AbortController for timeout
     const controller = new AbortController()
@@ -162,6 +187,7 @@ Be extremely careful with shark identification - many species look similar but h
     clearTimeout(timeoutId)
     
     console.log('📡 Response status:', response.status, response.statusText)
+    console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()))
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
@@ -170,7 +196,17 @@ Be extremely careful with shark identification - many species look similar but h
         statusText: response.statusText,
         error: errorData
       })
-      throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`)
+      const errorMessage = errorData.error?.message || 'Unknown error'
+      console.error('❌ FULL ERROR DATA:', errorData)
+      console.error('❌ OpenAI API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorMessage: errorMessage,
+        errorType: errorData.error?.type,
+        errorCode: errorData.error?.code,
+        fullError: errorData
+      })
+      throw new Error(`OpenAI API error: ${response.status} - ${errorMessage}`)
     }
 
     const data: OpenAIResponse = await response.json()

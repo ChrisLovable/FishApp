@@ -90,18 +90,27 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
         throw new Error('OpenAI API key not found. Please check your environment configuration.')
       }
 
-      // Call OpenAI Vision API
-      setDebugInfo(`API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0} - Making API call...`)
-      const result = await identifyFishWithOpenAI(selectedImage)
-      setIdentificationResult(result)
-      setDebugInfo('API call successful!')
-      setError(null) // Clear debug message on success
-      
-    } catch (err) {
-      console.error('Fish identification error:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Failed to identify fish. Please try again.'
-      setDebugInfo(`API call failed: ${errorMessage}`)
-      setError(`Error: ${errorMessage}`)
+              // Call OpenAI Vision API
+        setDebugInfo(`API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0} - Making API call...`)
+        const result = await identifyFishWithOpenAI(selectedImage)
+        setIdentificationResult(result)
+        setDebugInfo('API call successful!')
+        setError(null) // Clear debug message on success
+        
+      } catch (err) {
+        console.error('Fish identification error:', err)
+        const errorMessage = err instanceof Error ? err.message : 'Failed to identify fish. Please try again.'
+        setDebugInfo(`API call failed: ${errorMessage}`)
+        setError(`Error: ${errorMessage}`)
+        
+        // Log the full error details for debugging
+        if (err instanceof Error) {
+          console.error('Full error details:', {
+            name: err.name,
+            message: err.message,
+            stack: err.stack
+          })
+        }
     } finally {
       setIsAnalyzing(false)
     }
