@@ -63,20 +63,29 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     }
 
     // Check API key format (should be 32-36 characters, may include dashes)
+    const trimmedApiKey = apiKey.trim();
     console.log('API Key Debug:', {
       exists: !!apiKey,
-      length: apiKey.length,
+      originalLength: apiKey.length,
+      trimmedLength: trimmedApiKey.length,
       expectedRange: '32-36 characters',
       firstChars: apiKey.substring(0, 4) + '...',
       lastChars: '...' + apiKey.substring(apiKey.length - 4),
       hasDashes: apiKey.includes('-'),
-      isValidLength: apiKey.length >= 32 && apiKey.length <= 36
+      isValidLength: apiKey.length >= 32 && apiKey.length <= 36,
+      trimmedIsValid: trimmedApiKey.length >= 32 && trimmedApiKey.length <= 36,
+      hasLeadingSpaces: apiKey.length !== trimmedApiKey.length,
+      charCodes: apiKey.split('').map(c => c.charCodeAt(0)).slice(0, 10) // Show first 10 char codes
     });
     
-    if (apiKey.length < 32 || apiKey.length > 36) {
-      console.error('API key length is incorrect:', apiKey.length);
+    if (trimmedApiKey.length < 32 || trimmedApiKey.length > 36) {
+      console.error('API key length is incorrect:', {
+        original: apiKey.length,
+        trimmed: trimmedApiKey.length,
+        hasSpaces: apiKey.length !== trimmedApiKey.length
+      });
       return res.status(500).json({ 
-        error: `WorldTides API key format is invalid. Expected 32-36 characters, got ${apiKey.length}. Please check your VITE_WORLDTIDES_API_KEY environment variable.` 
+        error: `WorldTides API key format is invalid. Expected 32-36 characters, got ${trimmedApiKey.length} (original: ${apiKey.length}). Please check your VITE_WORLDTIDES_API_KEY environment variable for extra spaces.` 
       });
     }
 
@@ -86,7 +95,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       extremes: 'true',
       lat: latNum.toString(),
       lon: lonNum.toString(),
-      key: apiKey
+      key: trimmedApiKey
     });
 
     if (startNum !== undefined) {
