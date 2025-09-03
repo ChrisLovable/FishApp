@@ -512,17 +512,6 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
     }
   }
 
-
-
-
-    } catch (error) {
-      console.error('Error loading reports:', error)
-      setReports([])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   // Get unique towns from the reports for the dropdown
   const availableTowns = Array.from(new Set(reports.map(report => report.nearest_town).filter(Boolean))).sort()
 

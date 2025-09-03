@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { getWeatherUrl, getTidesUrl } from '../../utils/api'
 
 interface TideData {
   time: string
@@ -114,9 +115,8 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
         coordinates: location.coordinates
       })
       
-      const response = await fetch(
-        `/api/tides?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&start=${start}&length=86400`
-      )
+      const url = getTidesUrl(location.coordinates.lat, location.coordinates.lng, start, 86400)
+      const response = await fetch(url)
 
       if (response.ok) {
         const data = await response.json()
@@ -171,9 +171,8 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
   // Fetch weather data from serverless API
   const fetchWeatherData = async (location: LocationData) => {
     try {
-      const response = await fetch(
-        `/api/weather?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}`
-      )
+      const url = getWeatherUrl(location.coordinates.lat, location.coordinates.lng, "current")
+      const response = await fetch(url)
 
       if (response.ok) {
         const data = await response.json()
@@ -203,9 +202,8 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
   // Fetch moon phase and weather data from serverless API
   const fetchMoonPhaseFromAPI = async (location: LocationData, date: string) => {
     try {
-      const response = await fetch(
-        `/api/weather?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&type=astronomy&date=${date}`
-      )
+      const url = getWeatherUrl(location.coordinates.lat, location.coordinates.lng, "astronomy", date)
+      const response = await fetch(url)
 
       if (response.ok) {
         const data = await response.json()
@@ -386,7 +384,6 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
                   <button
                     onClick={() => {
                       setSelectedLocation(null)
-                      setSearchTerm('')
                       setTideData([])
                       setError(null)
                       setWeatherData(null)

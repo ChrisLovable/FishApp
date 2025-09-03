@@ -27,9 +27,9 @@ interface PublicGalleryModalProps {
 const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
   const [catches, setCatches] = useState<CatchData[]>([])
   const [isUploading, setIsUploading] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [showUploadForm, setShowUploadForm] = useState(false)
+
   const [currentUser, setCurrentUser] = useState('')
   const [formData, setFormData] = useState({
     anglerName: '',
@@ -99,8 +99,6 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
     }
   }
 
-  }
-
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && file.type.startsWith('image/')) {
@@ -136,7 +134,7 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
       const fileName = `${currentUser}_${Date.now()}.${fileExt}`
       const filePath = `${currentUser}/${fileName}`
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('public-gallery')
         .upload(filePath, selectedImage)
 
@@ -152,7 +150,7 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
         .getPublicUrl(filePath)
 
       // Save catch data to database
-      const { data: insertData, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('public_gallery')
         .insert({
           angler_name: formData.anglerName,
