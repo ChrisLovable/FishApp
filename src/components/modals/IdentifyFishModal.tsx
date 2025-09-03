@@ -100,7 +100,13 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
       } catch (err) {
         console.error('Fish identification error:', err)
         const errorMessage = err instanceof Error ? err.message : 'Failed to identify fish. Please try again.'
-        setDebugInfo(`API call failed: ${errorMessage}`)
+        
+        // Show the ACTUAL error details in debug panel
+        const fullErrorDetails = err instanceof Error ? 
+          `Error: ${err.name} - ${err.message}` : 
+          `Error: ${errorMessage}`
+        
+        setDebugInfo(`API call failed: ${fullErrorDetails}`)
         setError(`Error: ${errorMessage}`)
         
         // Log the full error details for debugging
