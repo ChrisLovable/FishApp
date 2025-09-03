@@ -66,32 +66,7 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
     }
   }
 
-  const handleChoosePhoto = () => {
-    // Force file input to open gallery on mobile
-    if (fileInputRef.current) {
-      // Clear any previous value to ensure fresh selection
-      fileInputRef.current.value = ''
-      
-      // Force gallery selection on ALL devices (mobile and desktop)
-      fileInputRef.current.setAttribute('capture', 'none')
-      fileInputRef.current.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp')
-      
-      // Additional mobile-specific attributes to force gallery
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-      if (isMobile) {
-        // Remove any camera-related attributes
-        fileInputRef.current.removeAttribute('capture')
-        fileInputRef.current.setAttribute('capture', 'none')
-        // Force accept only gallery files
-        fileInputRef.current.setAttribute('accept', 'image/*')
-      }
-      
-      // Trigger click with a small delay to ensure proper handling
-      setTimeout(() => {
-        fileInputRef.current?.click()
-      }, 100)
-    }
-  }
+
 
   const handleIdentify = async () => {
     if (!selectedImage) return
@@ -174,21 +149,13 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                       <div className="text-5xl mb-3">📸</div>
                                              <p className="text-blue-200 mb-3 text-sm">Select photo from gallery</p>
                        <p className="text-gray-400 text-xs mb-4">Supports JPEG, PNG, WebP, HEIC formats</p>
-                                              <input
+                                                                                            <input
                           ref={fileInputRef}
                           type="file"
-                          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp"
-                          capture="none"
+                          accept="image/*"
                           onChange={handleImageSelect}
-                          className="hidden"
-                          style={{ display: 'none' }}
+                          className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none text-sm"
                         />
-                                             <button
-                         onClick={handleChoosePhoto}
-                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                       >
-                         Choose Photo
-                       </button>
                     </div>
                     <p className="text-sm text-gray-400">
                       Upload a clear photo of the fish for best identification results
