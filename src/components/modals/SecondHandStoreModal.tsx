@@ -91,52 +91,61 @@ const SecondHandStoreModal = ({ isOpen, onClose }: SecondHandStoreModalProps) =>
     'Used'
   ]
 
-  // Load items from Supabase or localStorage
+  // Load items from Supabase
   const loadItems = async () => {
-    // FORCE DUMMY DATA FOR NOW - NO SUPABASE
-    console.log('🚫 Using dummy data for Second Hand Store (Supabase disabled)')
-    loadDummyData()
-  }
+    if (!supabase) {
+      console.error('❌ Supabase not available')
+      setItems([])
+      return
+    }
 
-  const loadFromLocalStorage = () => {
-    const savedItems = localStorage.getItem('secondHandItems')
-    if (savedItems) {
-      try {
-        const parsedItems = JSON.parse(savedItems)
-        console.log('✅ Loaded items from localStorage:', parsedItems.length, 'items')
-        setItems(parsedItems)
-      } catch (error) {
-        console.error('Error loading store items:', error)
-        loadDummyData()
+    try {
+      console.log('📊 Loading items from Supabase...')
+      const { data: supabaseItems, error } = await supabase
+        .from('second_hand_store')
+        .select('*')
+        .eq('is_sold', false)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('❌ Error loading items from Supabase:', error)
+        setItems([])
+        return
       }
-    } else {
-      console.log('🚫 No items in localStorage, loading dummy data')
-      loadDummyData()
+
+      if (supabaseItems && supabaseItems.length > 0) {
+        console.log('✅ Loaded', supabaseItems.length, 'items from Supabase')
+        // Convert Supabase data to the expected format
+        const convertedItems = supabaseItems.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          category: item.category,
+          condition: item.condition,
+          location: item.location,
+          contactName: item.contact_name,
+          contactPhone: item.contact_phone || '',
+          contactEmail: item.contact_email || '',
+          imageUrls: item.image_urls || [],
+          timestamp: new Date(item.created_at).getTime(),
+          userId: item.user_id,
+          isSold: item.is_sold
+        }))
+        setItems(convertedItems)
+      } else {
+        console.log('📭 No items found in Supabase')
+        setItems([])
+      }
+    } catch (error) {
+      console.error('💥 Error in loadItems:', error)
+      setItems([])
     }
   }
 
-  const loadDummyData = () => {
-    console.log('📊 Loading 125 dummy store items...')
-    // Clear localStorage to force loading new dummy data
-    localStorage.removeItem('secondHandItems')
-    // Add dummy data if no items exist
-      const dummyItems: StoreItem[] = [
-        {
-          id: '1',
-          title: 'Shimano Stradic 3000 Spinning Reel',
-          description: 'Excellent condition Shimano Stradic 3000 spinning reel. Used only a few times, comes with original box and papers. Perfect for light to medium fishing.',
-          price: 850.00,
-          category: 'Rods & Reels',
-          condition: 'Like New',
-          location: 'Cape Town',
-          contactName: 'John Smith',
-          contactPhone: '082 123 4567',
-          contactEmail: 'john.smith@email.com',
-          imageUrls: ['/images/placeholder-reel.jpg'],
-          timestamp: Date.now() - 1800000, // 30 minutes ago
-          userId: 'dummy_user_1',
-          isSold: false
-        },
+
+    
+
         {
           id: '2',
           title: 'Penn Battle II 4000 Combo',
@@ -2122,10 +2131,8 @@ const SecondHandStoreModal = ({ isOpen, onClose }: SecondHandStoreModalProps) =>
           timestamp: Date.now() - 212400000, // 59 hours ago
           userId: 'dummy_user_125',
           isSold: false
-        }
-              ]
-        console.log('✅ Loaded dummy items:', dummyItems.length, 'items (125 total with realistic timestamps)')
-        setItems(dummyItems)
+
+
   }
 
   // Load items on component mount

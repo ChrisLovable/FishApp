@@ -468,357 +468,53 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
 
   const loadReports = async () => {
     setIsLoading(true)
-    console.log('🎣 Loading reports in WhatsBitingModal...')
+    console.log('🎣 Loading reports from Supabase...')
     
     try {
-      // FORCE DUMMY DATA FOR NOW - NO SUPABASE
-      console.log('🚫 Using dummy data (Supabase disabled)')
-      console.log('📊 Loading 20 dummy catch reports...')
-      // Dummy data for testing (20 rows)
-        const dummyReports: CatchReport[] = [
-          {
-            id: 1,
-            species: 'Common / Dusky kob',
-            quantity: 3,
-            location_name: 'Cape Town Harbour',
-            nearest_town: 'Cape Town',
-            latitude: -33.9249,
-            longitude: 18.4241,
-            date_caught: new Date(Date.now() - 86400000).toISOString(),
-            time_caught: '06:30',
-            conditions: 'Sunny, light wind',
-            bait_used: 'Live mullet',
-            notes: 'Great fishing this morning, caught 3 kob between 6-8am',
-            angler_name: 'Mike Johnson',
-            verified: true,
-            distance_km: 2.1
-          },
-          {
-            id: 2,
-            species: 'Bronze bream',
-            quantity: 5,
-            location_name: 'Durban Beachfront',
-            nearest_town: 'Durban',
-            latitude: -29.8587,
-            longitude: 31.0218,
-            date_caught: new Date(Date.now() - 172800000).toISOString(),
-            time_caught: '14:30',
-            conditions: 'Overcast',
-            bait_used: 'Prawns',
-            notes: 'Good session with the family, multiple bream caught',
-            angler_name: 'Sarah Wilson',
-            verified: true,
-            distance_km: 0.8
-          },
-          {
-            id: 3,
-            species: 'Black musselcracker',
-            quantity: 1,
-            location_name: 'Port Elizabeth',
-            nearest_town: 'Port Elizabeth',
-            latitude: -33.9608,
-            longitude: 25.6022,
-            date_caught: new Date(Date.now() - 259200000).toISOString(),
-            time_caught: '18:45',
-            conditions: 'Windy',
-            bait_used: 'Red crab',
-            notes: 'Tough fight but worth it, strong fish',
-            angler_name: 'David Brown',
-            verified: true,
-            distance_km: 1.5
-          },
-          {
-            id: 4,
-            species: 'Galjoen',
-            quantity: 2,
-            location_name: 'Hermanus',
-            nearest_town: 'Hermanus',
-            latitude: -34.4187,
-            longitude: 19.2345,
-            date_caught: new Date(Date.now() - 345600000).toISOString(),
-            time_caught: '07:15',
-            conditions: 'Clear',
-            bait_used: 'White mussel',
-            notes: 'Beautiful fish, released after photo',
-            angler_name: 'Lisa Davis',
-            verified: true,
-            distance_km: 0.3
-          },
-          {
-            id: 5,
-            species: 'Roman',
-            quantity: 1,
-            location_name: 'Knysna Lagoon',
-            nearest_town: 'Knysna',
-            latitude: -34.0361,
-            longitude: 23.0471,
-            date_caught: new Date(Date.now() - 432000000).toISOString(),
-            time_caught: '15:20',
-            conditions: 'Sunny',
-            bait_used: 'Prawns',
-            notes: 'Surprise catch on light tackle',
-            angler_name: 'John Smith',
-            verified: true,
-            distance_km: 0.5
-          },
-          {
-            id: 6,
-            species: 'Shad',
-            quantity: 8,
-            location_name: 'Mossel Bay',
-            nearest_town: 'Mossel Bay',
-            latitude: -34.1817,
-            longitude: 22.1460,
-            date_caught: new Date(Date.now() - 518400000).toISOString(),
-            time_caught: '05:45',
-            conditions: 'Calm',
-            bait_used: 'Sardine',
-            notes: 'Shad running strong, caught 8 in 2 hours',
-            angler_name: 'Mike Johnson',
-            verified: true,
-            distance_km: 1.2
-          },
-          {
-            id: 7,
-            species: 'Spotted grunter',
-            quantity: 4,
-            location_name: 'Jeffreys Bay',
-            nearest_town: 'Jeffreys Bay',
-            latitude: -34.0489,
-            longitude: 24.9111,
-            date_caught: new Date(Date.now() - 604800000).toISOString(),
-            time_caught: '17:30',
-            conditions: 'Light wind',
-            bait_used: 'Mud prawn',
-            notes: 'Good grunter fishing, multiple fish landed',
-            angler_name: 'Sarah Wilson',
-            verified: true,
-            distance_km: 0.7
-          },
-          {
-            id: 8,
-            species: 'White steenbras',
-            quantity: 2,
-            location_name: 'East London',
-            nearest_town: 'East London',
-            latitude: -33.0153,
-            longitude: 27.9116,
-            date_caught: new Date(Date.now() - 691200000).toISOString(),
-            time_caught: '08:00',
-            conditions: 'Overcast',
-            bait_used: 'Red crab',
-            notes: 'Steenbras feeding well on the outgoing tide',
-            angler_name: 'David Brown',
-            verified: true,
-            distance_km: 2.3
-          },
-          {
-            id: 9,
-            species: 'Garrick',
-            quantity: 1,
-            location_name: 'Plettenberg Bay',
-            nearest_town: 'Plettenberg Bay',
-            latitude: -34.0527,
-            longitude: 23.3716,
-            date_caught: new Date(Date.now() - 777600000).toISOString(),
-            time_caught: '16:15',
-            conditions: 'Sunny',
-            bait_used: 'Live mullet',
-            notes: 'Garrick hunting in the shallows, exciting sight fishing',
-            angler_name: 'Lisa Davis',
-            verified: true,
-            distance_km: 0.9
-          },
-          {
-            id: 10,
-            species: 'Cape stumpnose',
-            quantity: 6,
-            location_name: 'Saldanha Bay',
-            nearest_town: 'Saldanha',
-            latitude: -33.0117,
-            longitude: 17.9442,
-            date_caught: new Date(Date.now() - 864000000).toISOString(),
-            time_caught: '09:30',
-            conditions: 'Clear',
-            bait_used: 'Prawns',
-            notes: 'Stumpnose school feeding actively',
-            angler_name: 'John Smith',
-            verified: true,
-            distance_km: 1.8
-          },
-          {
-            id: 11,
-            species: 'Blacktail',
-            quantity: 12,
-            location_name: 'Langebaan',
-            nearest_town: 'Langebaan',
-            latitude: -33.0975,
-            longitude: 18.0265,
-            date_caught: new Date(Date.now() - 950400000).toISOString(),
-            time_caught: '18:00',
-            conditions: 'Calm',
-            bait_used: 'White mussel',
-            notes: 'Blacktail bite was on fire, caught 12 fish',
-            angler_name: 'Mike Johnson',
-            verified: true,
-            distance_km: 0.4
-          },
-          {
-            id: 12,
-            species: 'Zebra',
-            quantity: 3,
-            location_name: 'Gansbaai',
-            nearest_town: 'Gansbaai',
-            latitude: -34.5804,
-            longitude: 19.3516,
-            date_caught: new Date(Date.now() - 1036800000).toISOString(),
-            time_caught: '06:00',
-            conditions: 'Windy',
-            bait_used: 'Red crab',
-            notes: 'Zebra feeding on the rocky ledges',
-            angler_name: 'Sarah Wilson',
-            verified: true,
-            distance_km: 1.1
-          },
-          {
-            id: 13,
-            species: 'Duckbill',
-            quantity: 4,
-            location_name: 'Stilbaai',
-            nearest_town: 'Stilbaai',
-            latitude: -34.3677,
-            longitude: 21.4189,
-            date_caught: new Date(Date.now() - 1123200000).toISOString(),
-            time_caught: '14:45',
-            conditions: 'Sunny',
-            bait_used: 'Prawns',
-            notes: 'Duckbill in the surf zone, good action',
-            angler_name: 'David Brown',
-            verified: true,
-            distance_km: 0.6
-          },
-          {
-            id: 14,
-            species: 'Bronze bream',
-            quantity: 7,
-            location_name: 'Wilderness',
-            nearest_town: 'Wilderness',
-            latitude: -33.9883,
-            longitude: 22.5808,
-            date_caught: new Date(Date.now() - 1209600000).toISOString(),
-            time_caught: '10:15',
-            conditions: 'Overcast',
-            bait_used: 'Mud prawn',
-            notes: 'Bream feeding well in the lagoon',
-            angler_name: 'Lisa Davis',
-            verified: true,
-            distance_km: 0.8
-          },
-          {
-            id: 15,
-            species: 'King soldierbream',
-            quantity: 2,
-            location_name: 'Ballito',
-            nearest_town: 'Ballito',
-            latitude: -29.5392,
-            longitude: 31.2136,
-            date_caught: new Date(Date.now() - 1296000000).toISOString(),
-            time_caught: '17:00',
-            conditions: 'Light wind',
-            bait_used: 'Sardine',
-            notes: 'King soldierbream on the bite, good size fish',
-            angler_name: 'John Smith',
-            verified: true,
-            distance_km: 1.3
-          },
-          {
-            id: 16,
-            species: 'Giant kingfish',
-            quantity: 1,
-            location_name: 'Richards Bay',
-            nearest_town: 'Richards Bay',
-            latitude: -28.7830,
-            longitude: 32.0378,
-            date_caught: new Date(Date.now() - 1382400000).toISOString(),
-            time_caught: '05:30',
-            conditions: 'Calm',
-            bait_used: 'Live mullet',
-            notes: 'Giant kingfish hunting, caught one monster',
-            angler_name: 'Mike Johnson',
-            verified: true,
-            distance_km: 2.7
-          },
-          {
-            id: 17,
-            species: 'Shad',
-            quantity: 15,
-            location_name: 'Umhlanga',
-            nearest_town: 'Umhlanga',
-            latitude: -29.7277,
-            longitude: 31.0821,
-            date_caught: new Date(Date.now() - 1468800000).toISOString(),
-            time_caught: '13:45',
-            conditions: 'Sunny',
-            bait_used: 'Sardine',
-            notes: 'Shad run in full swing, non-stop action',
-            angler_name: 'Sarah Wilson',
-            verified: true,
-            distance_km: 0.2
-          },
-          {
-            id: 18,
-            species: 'Spotted grunter',
-            quantity: 5,
-            location_name: 'Scottburgh',
-            nearest_town: 'Scottburgh',
-            latitude: -30.2867,
-            longitude: 30.7533,
-            date_caught: new Date(Date.now() - 1555200000).toISOString(),
-            time_caught: '11:30',
-            conditions: 'Clear',
-            bait_used: 'Mud prawn',
-            notes: 'Grunter feeding on the sandbanks',
-            angler_name: 'David Brown',
-            verified: true,
-            distance_km: 1.4
-          },
-          {
-            id: 19,
-            species: 'Bronze bream',
-            quantity: 9,
-            location_name: 'Margate',
-            nearest_town: 'Margate',
-            latitude: -30.8647,
-            longitude: 30.3733,
-            date_caught: new Date(Date.now() - 1641600000).toISOString(),
-            time_caught: '16:30',
-            conditions: 'Overcast',
-            bait_used: 'Prawns',
-            notes: 'Bream school active in the shallows',
-            angler_name: 'Lisa Davis',
-            verified: true,
-            distance_km: 0.9
-          },
-          {
-            id: 20,
-            species: 'Common / Dusky kob',
-            quantity: 3,
-            location_name: 'Port Shepstone',
-            nearest_town: 'Port Shepstone',
-            latitude: -30.7411,
-            longitude: 30.4553,
-            date_caught: new Date(Date.now() - 1728000000).toISOString(),
-            time_caught: '06:15',
-            conditions: 'Light wind',
-            bait_used: 'Live mullet',
-            notes: 'Kob feeding well on the incoming tide',
-            angler_name: 'John Smith',
-            verified: true,
-            distance_km: 1.6
-          }
-        ]
-        console.log('✅ Loaded dummy reports:', dummyReports.length, 'reports')
-        setReports(dummyReports)
+      if (!supabase) {
+        console.error('❌ Supabase not available')
+        setIsLoading(false)
+        return
+      }
+
+      let query = supabase
+        .from('catch_reports')
+        .select('*')
+        .order('date_caught', { ascending: false })
+
+      // Apply filters
+      if (selectedLocation !== 'all') {
+        query = query.eq('location_name', selectedLocation)
+      }
+      if (selectedSpecies !== 'all') {
+        query = query.eq('species', selectedSpecies)
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        console.error('❌ Error loading reports:', error)
+        setIsLoading(false)
+        return
+      }
+
+      if (data && data.length > 0) {
+        console.log('✅ Loaded', data.length, 'reports from Supabase')
+        setReports(data)
+      } else {
+        console.log('📭 No reports found in Supabase')
+        setReports([])
+      }
+    } catch (error) {
+      console.error('💥 Error loading reports:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+
+
+
     } catch (error) {
       console.error('Error loading reports:', error)
       setReports([])

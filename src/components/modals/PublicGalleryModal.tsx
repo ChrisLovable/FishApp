@@ -68,101 +68,11 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
   // Load catches from Supabase
   const loadCatches = async () => {
     if (!supabase) {
-      console.log('🚫 Supabase not configured, using dummy data')
-      // Use dummy data when Supabase is not configured
-      const dummyCatches: CatchData[] = [
-        {
-          id: 1,
-          angler_name: 'Mike Johnson',
-          species: 'Common / Dusky kob',
-          date_caught: '2024-01-15',
-          location: 'Cape Town Harbour',
-          bait_used: 'Live mullet',
-          length_cm: 85,
-          weight_kg: 12.5,
-          weather_conditions: 'Sunny, light wind',
-          tide_state: 'High Tide',
-          moon_phase: 'Waxing Gibbous',
-          notes: 'Caught this beauty early morning on live bait. Fought hard for about 15 minutes. Great eating fish!',
-          image_url: '/images/fish/common-kob.jpg',
-          user_id: 'dummy_user_1',
-          created_at: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          id: 2,
-          angler_name: 'Sarah Wilson',
-          species: 'Bronze bream',
-          date_caught: '2024-01-14',
-          location: 'Durban Beachfront',
-          bait_used: 'Prawns',
-          length_cm: 45,
-          weight_kg: 2.8,
-          weather_conditions: 'Overcast',
-          tide_state: 'Rising',
-          moon_phase: 'First Quarter',
-          notes: 'Great session with the family. Kids were so excited to see this fish!',
-          image_url: '/images/fish/bronze-bream.jpg',
-          user_id: 'dummy_user_2',
-          created_at: new Date(Date.now() - 172800000).toISOString()
-        },
-        {
-          id: 3,
-          angler_name: 'David Brown',
-          species: 'Black musselcracker',
-          date_caught: '2024-01-13',
-          location: 'Port Elizabeth',
-          bait_used: 'Red crab',
-          length_cm: 65,
-          weight_kg: 8.2,
-          weather_conditions: 'Windy',
-          tide_state: 'Low Tide',
-          moon_phase: 'Waxing Crescent',
-          notes: 'Tough fight from this strong fish. Used 30lb braid and it still took some time to land.',
-          image_url: '/images/fish/black-musselcracker.jpg',
-          user_id: 'dummy_user_3',
-          created_at: new Date(Date.now() - 259200000).toISOString()
-        },
-        {
-          id: 4,
-          angler_name: 'Lisa Davis',
-          species: 'Galjoen',
-          date_caught: '2024-01-12',
-          location: 'Hermanus',
-          bait_used: 'White mussel',
-          length_cm: 38,
-          weight_kg: 1.5,
-          weather_conditions: 'Clear',
-          tide_state: 'Falling',
-          moon_phase: 'New Moon',
-          notes: 'Beautiful fish with amazing colors. Released after taking a quick photo.',
-          image_url: '/images/fish/galjoen.jpg',
-          user_id: 'dummy_user_4',
-          created_at: new Date(Date.now() - 345600000).toISOString()
-        },
-        {
-          id: 5,
-          angler_name: 'John Smith',
-          species: 'Roman',
-          date_caught: '2024-01-11',
-          location: 'Knysna Lagoon',
-          bait_used: 'Prawns',
-          length_cm: 42,
-          weight_kg: 2.1,
-          weather_conditions: 'Sunny',
-          tide_state: 'High Tide',
-          moon_phase: 'Waning Crescent',
-          notes: 'Caught this on light tackle while fishing for smaller species. Great surprise!',
-          image_url: '/images/fish/roman.jpg',
-          user_id: 'dummy_user_5',
-          created_at: new Date(Date.now() - 432000000).toISOString()
-        }
-      ]
-      console.log('✅ Loaded dummy catches:', dummyCatches.length, 'catches')
-      setCatches(dummyCatches)
+      console.error('❌ Supabase not available')
+      setCatches([])
       return
     }
 
-    // Load real data from Supabase
     try {
       console.log('📊 Loading catches from Supabase...')
       const { data: supabaseCatches, error } = await supabase
@@ -171,8 +81,8 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Error loading catches from Supabase:', error)
-        alert('Error loading catches: ' + error.message)
+        console.error('❌ Error loading catches from Supabase:', error)
+        setCatches([])
         return
       }
 
@@ -180,33 +90,15 @@ const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
         console.log('✅ Loaded', supabaseCatches.length, 'catches from Supabase')
         setCatches(supabaseCatches)
       } else {
-        console.log('📭 No catches found in Supabase, using dummy data')
-        // Use dummy data if no real data exists
-        const dummyCatches: CatchData[] = [
-          {
-            id: 1,
-            angler_name: 'Mike Johnson',
-            species: 'Common / Dusky kob',
-            date_caught: '2024-01-15',
-            location: 'Cape Town Harbour',
-            bait_used: 'Live mullet',
-            length_cm: 85,
-            weight_kg: 12.5,
-            weather_conditions: 'Sunny, light wind',
-            tide_state: 'High Tide',
-            moon_phase: 'Waxing Gibbous',
-            notes: 'Caught this beauty early morning on live bait. Fought hard for about 15 minutes. Great eating fish!',
-            image_url: '/images/fish/common-kob.jpg',
-            user_id: 'dummy_user_1',
-            created_at: new Date(Date.now() - 86400000).toISOString()
-          }
-        ]
-        setCatches(dummyCatches)
+        console.log('📭 No catches found in Supabase')
+        setCatches([])
       }
     } catch (error) {
-      console.error('Error in loadCatches:', error)
-      alert('Error loading catches. Please try again.')
+      console.error('💥 Error in loadCatches:', error)
+      setCatches([])
     }
+  }
+
   }
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
