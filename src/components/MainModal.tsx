@@ -45,7 +45,7 @@ const MainModal = ({ isOpen, onClose }: MainModalProps) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
       <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
         <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '680px'}}>
-          {/* Header - Updated for deployment */}
+          {/* Header - DEPLOYMENT TEST - NEW VERSION */}
           <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <div className="flex items-center justify-center flex-1">
               <img 
