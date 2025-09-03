@@ -1,4 +1,4 @@
-// App version tracking
+// App version tracking - v0.3.2
 export const APP_VERSION = "0.3.2"
 export const VERSION_NOTES = "crash fix: logo path + Supabase error logging + comprehensive error capture"
 

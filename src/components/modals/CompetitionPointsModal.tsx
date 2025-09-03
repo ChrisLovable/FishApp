@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../config/supabase'
+import { safeLocalStorage } from '../../utils/safeStorage'
 
 interface FishEntry {
   id: string
@@ -348,23 +349,22 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
 
   // Local storage functions for offline persistence
   const saveFishEntriesToStorage = () => {
-    try {
-      localStorage.setItem('competitionPointsEntries', JSON.stringify(fishEntries))
-    } catch (error) {
-      console.error('Error saving fish entries to storage:', error)
+    const success = safeLocalStorage.setItem('competitionPointsEntries', JSON.stringify(fishEntries))
+    if (!success) {
+      console.warn('⚠️ Failed to save competition points to localStorage - data will be lost on refresh')
     }
   }
 
   const loadFishEntriesFromStorage = () => {
-    try {
-      const stored = localStorage.getItem('competitionPointsEntries')
-      if (stored) {
+    const stored = safeLocalStorage.getItem('competitionPointsEntries')
+    if (stored) {
+      try {
         const entries = JSON.parse(stored)
         setFishEntries(entries)
         console.log('Loaded fish entries from storage:', entries.length)
+      } catch (error) {
+        console.error('Error parsing fish entries from storage:', error)
       }
-    } catch (error) {
-      console.error('Error loading fish entries from storage:', error)
     }
   }
 

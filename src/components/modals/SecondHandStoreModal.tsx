@@ -148,10 +148,15 @@ const SecondHandStoreModal = ({ isOpen, onClose }: SecondHandStoreModalProps) =>
     loadItems()
   }, [])
 
-  // Save items to localStorage whenever items change
-  useEffect(() => {
-    localStorage.setItem('secondHandItems', JSON.stringify(items))
-  }, [items])
+  // Remove localStorage caching to prevent quota exceeded errors
+  // We now fetch directly from Supabase, so no need to cache large datasets
+  // useEffect(() => {
+  //   try {
+  //     localStorage.setItem('secondHandItems', JSON.stringify(items))
+  //   } catch (err) {
+  //     console.warn('⚠️ LocalStorage quota exceeded, skipping cache', err)
+  //   }
+  // }, [items])
 
   // Set current user (in a real app, this would come from authentication)
   useEffect(() => {

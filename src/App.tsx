@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import MainModal from './components/MainModal'
 import OnboardingFlow from './components/OnboardingFlow'
-import { setupGlobalErrorHandling, ErrorBoundary, logger } from './utils/logger'
+import { setupGlobalErrorHandling, logger } from './utils/logger'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { logVersionInfo, APP_VERSION } from './constants/version'
 import './App.css'
 
@@ -10,7 +11,7 @@ function App() {
 
   // Setup error logging and service worker
   useEffect(() => {
-    // Log app version for debugging
+    // Log app version for debugging - v0.3.2
     logVersionInfo()
     
     // Setup global error handling
@@ -71,12 +72,26 @@ function App() {
             </h1>
             
             {!isMainModalOpen && (
-              <button
-                onClick={() => setIsMainModalOpen(true)}
-                className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-              >
-                Open FishApp Menu
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={() => setIsMainModalOpen(true)}
+                  className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                >
+                  Open FishApp Menu
+                </button>
+                
+                {/* Test Error Logging Button - Remove after testing */}
+                <button
+                  onClick={() => {
+                    console.log("🧪 Testing error logging...")
+                    // Trigger a test error
+                    throw new Error("🧪 TEST ERROR: This is a controlled test error to verify logging system")
+                  }}
+                  className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors text-sm"
+                >
+                  🧪 Test Error Logging
+                </button>
+              </div>
             )}
 
             <MainModal 
