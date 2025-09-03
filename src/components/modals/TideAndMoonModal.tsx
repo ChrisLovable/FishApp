@@ -108,6 +108,8 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
         date: date,
         dateObj: dateObj.toISOString(),
         start: start,
+        startType: typeof start,
+        startIsValid: !isNaN(start) && start > 0,
         location: location.name,
         coordinates: location.coordinates
       })
