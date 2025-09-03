@@ -22,7 +22,7 @@
   z-index: 50;
 }
 
-/* Ensure modals take full available space */
+/* Ensure modals take full available space - FIXED BLACK BACKGROUND */
 .modal-content {
   background: #000000;
   border: 1px solid #475569;
