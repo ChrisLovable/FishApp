@@ -75,23 +75,8 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
     setError(null)
 
     try {
-      // Check API key availability
-      const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-      console.log('🔑 API Key check:', {
-        exists: !!apiKey,
-        length: apiKey?.length || 0,
-        startsWith: apiKey?.substring(0, 3) || 'N/A'
-      })
-      
-      // Also show on screen for mobile debugging
-      setDebugInfo(`API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0}`)
-      
-      if (!apiKey) {
-        throw new Error('OpenAI API key not found. Please check your environment configuration.')
-      }
-
-              // Call OpenAI Vision API
-        setDebugInfo(`API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0} - Making API call...`)
+      // Call serverless API for fish identification
+      setDebugInfo('Making API call to serverless function...')
         const result = await identifyFishWithOpenAI(selectedImage)
         setIdentificationResult(result)
         setDebugInfo('API call successful!')
