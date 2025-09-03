@@ -49,7 +49,7 @@ const MainModal = ({ isOpen, onClose }: MainModalProps) => {
           <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <div className="flex items-center justify-center flex-1">
               <img 
-                src="./logo.jpg" 
+                src="/logo.jpg" 
                 alt="FishApp Logo" 
                 className="h-16"
                 style={{width: '200px', height: '90px'}}
