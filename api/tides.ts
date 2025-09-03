@@ -17,7 +17,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   }
 
   try {
-    const { lat, lon } = req.query;
+    const { lat, lon, start, length = '86400' } = req.query;
 
     if (!lat || !lon) {
       return res.status(400).json({ error: 'Latitude and longitude are required' });
@@ -28,7 +28,27 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       return res.status(500).json({ error: 'WorldTides API key not configured' });
     }
 
-    const url = `https://www.worldtides.info/api/v3?heights&extremes&lat=${lat}&lon=${lon}&key=${apiKey}`;
+    // Build URL with all required parameters
+    const params = new URLSearchParams({
+      extremes: '',
+      lat: lat.toString(),
+      lon: lon.toString(),
+      key: apiKey
+    });
+
+    if (start) {
+      params.append('start', start.toString());
+    }
+    if (length) {
+      params.append('length', length.toString());
+    }
+
+    const url = `https://www.worldtides.info/api/v3?${params.toString()}`;
+
+    console.log('WorldTides API Request:', {
+      url: url.replace(apiKey, '***HIDDEN***'),
+      params: Object.fromEntries(params.entries())
+    });
 
     const response = await fetch(url);
 
