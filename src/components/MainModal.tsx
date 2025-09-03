@@ -47,7 +47,20 @@ const MainModal = ({ isOpen, onClose }: MainModalProps) => {
         <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '680px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-4 flex-shrink-0">
-            <h2 className="text-xl font-bold text-white">FishApp Menu</h2>
+            <div className="flex items-center justify-center flex-1">
+              <img 
+                src="./logo.jpg" 
+                alt="FishApp Logo" 
+                className="h-16"
+                style={{width: '200px', height: '90px'}}
+                onError={(e) => {
+                  console.log('Logo failed to load, using text fallback');
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling.style.display = 'block';
+                }}
+              />
+              <h2 className="text-xl font-bold text-white" style={{display: 'none'}}>FishApp Menu</h2>
+            </div>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors p-2"
@@ -61,7 +74,7 @@ const MainModal = ({ isOpen, onClose }: MainModalProps) => {
 
           {/* Scrollable Content Area */}
           <div className="flex-1 overflow-y-auto overscroll-contain">
-            <div className="space-y-4 p-1">
+            <div className="space-y-3 p-1">
               <LengthToWeightButton onClick={() => handleButtonClick('length-to-weight')} />
               <SpeciesInfoButton onClick={() => handleButtonClick('species-info')} />
               <IdentifyFishButton onClick={() => handleButtonClick('identify-fish')} />

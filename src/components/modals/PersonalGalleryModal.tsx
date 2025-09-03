@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { supabase } from '../../config/supabase'
 
 interface CatchEntry {
   id: string
@@ -11,6 +12,8 @@ interface CatchEntry {
   conditions: string
   photo?: string // Base64 encoded image
   timestamp: number
+  user_email: string
+  photo_url?: string // URL to Supabase storage
 }
 
 interface Species {
@@ -28,6 +31,9 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
   const [catches, setCatches] = useState<CatchEntry[]>([])
   const [species, setSpecies] = useState<Species[]>([])
   const [view, setView] = useState<'catches' | 'add'>('catches')
+  const [userEmail, setUserEmail] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -48,29 +54,65 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
 
   // Load data on component mount
   useEffect(() => {
-    loadCatches()
+    const email = localStorage.getItem('userEmail')
+    if (email) {
+      setUserEmail(email)
+      loadCatches(email)
+    }
     loadSpeciesData()
   }, [])
 
-  // Load catches from localStorage
-  const loadCatches = () => {
+  // Load catches from Supabase
+  const loadCatches = async (email: string) => {
+    if (!supabase || !email) {
+      console.error('❌ Supabase not available or no user email')
+      setCatches([])
+      return
+    }
+
     try {
-      const savedCatches = localStorage.getItem('fishapp-catches')
-      if (savedCatches) {
-        setCatches(JSON.parse(savedCatches))
+      setIsLoading(true)
+      console.log('📊 Loading personal catches from Supabase for:', email)
+      
+      const { data: supabaseCatches, error } = await supabase
+        .from('personal_gallery')
+        .select('*')
+        .eq('user_email', email)
+        .order('date', { ascending: false })
+
+      if (error) {
+        console.error('❌ Error loading catches from Supabase:', error)
+        setCatches([])
+        return
+      }
+
+      if (supabaseCatches && supabaseCatches.length > 0) {
+        console.log('✅ Loaded', supabaseCatches.length, 'personal catches from Supabase')
+        // Convert Supabase format to component format
+        const convertedCatches = supabaseCatches.map(catchItem => ({
+          id: catchItem.id,
+          species: catchItem.species,
+          date: catchItem.date,
+          place: catchItem.place,
+          length: catchItem.length?.toString() || '',
+          weight: catchItem.weight?.toString() || '',
+          bait: catchItem.bait || '',
+          conditions: catchItem.conditions || '',
+          photo: catchItem.photo_url || '',
+          timestamp: new Date(catchItem.created_at).getTime(),
+          user_email: catchItem.user_email,
+          photo_url: catchItem.photo_url
+        }))
+        setCatches(convertedCatches)
+      } else {
+        console.log('📭 No personal catches found in Supabase')
+        setCatches([])
       }
     } catch (error) {
-      console.error('Error loading catches:', error)
-    }
-  }
-
-  // Save catches to localStorage
-  const saveCatches = (newCatches: CatchEntry[]) => {
-    try {
-      localStorage.setItem('fishapp-catches', JSON.stringify(newCatches))
-      setCatches(newCatches)
-    } catch (error) {
-      console.error('Error saving catches:', error)
+      console.error('💥 Error in loadCatches:', error)
+      setCatches([])
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -123,41 +165,146 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
 
 
   // Add new catch entry
-  const addCatch = () => {
+  const addCatch = async () => {
     if (!formData.species || !formData.date || !formData.place) {
       alert('Please fill in at least Species, Date, and Place')
       return
     }
 
-    const newCatch: CatchEntry = {
-      id: Date.now().toString(),
-      ...formData,
-      timestamp: Date.now()
+    if (!supabase || !userEmail) {
+      alert('Database not configured or user not logged in')
+      return
     }
 
-    const updatedCatches = [newCatch, ...catches]
-    saveCatches(updatedCatches)
+    setIsUploading(true)
 
-    // Reset form
-    setFormData({
-      species: '',
-      date: new Date().toISOString().split('T')[0],
-      place: '',
-      length: '',
-      weight: '',
-      bait: '',
-      conditions: '',
-      photo: ''
-    })
-    setSearchTerm('')
-    setView('catches')
+    try {
+      let photoUrl = null
+
+      // Upload photo to Supabase storage if provided
+      if (formData.photo) {
+        const fileExt = 'jpg' // Default extension for base64 images
+        const fileName = `${userEmail}_${Date.now()}.${fileExt}`
+        const filePath = `${userEmail}/${fileName}`
+
+        // Convert base64 to blob
+        const response = await fetch(formData.photo)
+        const blob = await response.blob()
+
+        const { error: uploadError } = await supabase.storage
+          .from('personal-gallery')
+          .upload(filePath, blob)
+
+        if (uploadError) {
+          console.error('Error uploading image:', uploadError)
+          alert('Error uploading image: ' + uploadError.message)
+          return
+        }
+
+        // Get public URL for the uploaded image
+        const { data: urlData } = supabase.storage
+          .from('personal-gallery')
+          .getPublicUrl(filePath)
+        
+        photoUrl = urlData.publicUrl
+      }
+
+      // Save catch data to database
+      const { data: insertedCatch, error: insertError } = await supabase
+        .from('personal_gallery')
+        .insert({
+          user_email: userEmail,
+          species: formData.species,
+          date: formData.date,
+          place: formData.place,
+          length: formData.length ? parseFloat(formData.length) : null,
+          weight: formData.weight ? parseFloat(formData.weight) : null,
+          bait: formData.bait || null,
+          conditions: formData.conditions || null,
+          photo_url: photoUrl,
+          notes: null // Add notes field if needed
+        })
+        .select()
+
+      if (insertError) {
+        console.error('Error saving catch data:', insertError)
+        alert('Error saving catch data: ' + insertError.message)
+        return
+      }
+
+      // Reload catches to show the new entry
+      await loadCatches(userEmail)
+
+      // Reset form
+      setFormData({
+        species: '',
+        date: new Date().toISOString().split('T')[0],
+        place: '',
+        length: '',
+        weight: '',
+        bait: '',
+        conditions: '',
+        photo: ''
+      })
+      setSearchTerm('')
+      setView('catches')
+
+      alert('Catch saved successfully!')
+      
+    } catch (error) {
+      console.error('Error saving catch:', error)
+      alert('Error saving catch. Please try again.')
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   // Delete catch entry
-  const deleteCatch = (id: string) => {
+  const deleteCatch = async (id: string) => {
+    if (!supabase || !userEmail) {
+      alert('Database not configured or user not logged in')
+      return
+    }
+
     if (confirm('Are you sure you want to delete this catch?')) {
-      const updatedCatches = catches.filter(c => c.id !== id)
-      saveCatches(updatedCatches)
+      try {
+        // Find the catch to get the photo URL for deletion
+        const catchToDelete = catches.find(c => c.id === id)
+        
+        // Delete from database
+        const { error: deleteError } = await supabase
+          .from('personal_gallery')
+          .delete()
+          .eq('id', id)
+          .eq('user_email', userEmail)
+
+        if (deleteError) {
+          console.error('Error deleting catch:', deleteError)
+          alert('Error deleting catch: ' + deleteError.message)
+          return
+        }
+
+        // Delete photo from storage if it exists
+        if (catchToDelete?.photo_url) {
+          try {
+            const imagePath = catchToDelete.photo_url.split('/').slice(-2).join('/')
+            await supabase.storage
+              .from('personal-gallery')
+              .remove([imagePath])
+          } catch (storageError) {
+            console.warn('Error deleting image from storage:', storageError)
+            // Don't fail the whole operation if image deletion fails
+          }
+        }
+
+        // Reload catches
+        await loadCatches(userEmail)
+        alert('Catch deleted successfully!')
+        
+      } catch (error) {
+        console.error('Error deleting catch:', error)
+        alert('Error deleting catch. Please try again.')
+      }
     }
   }
 
@@ -201,7 +348,12 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
             {view === 'catches' ? (
               /* Gallery View */
               <div>
-                {catches.length === 0 ? (
+                {isLoading ? (
+                  <div className="text-center py-12">
+                    <div className="text-blue-400 text-lg mb-2">Loading catches...</div>
+                    <div className="text-gray-500 text-sm">Please wait</div>
+                  </div>
+                ) : catches.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="text-6xl mb-4">🎣</div>
                     <h3 className="text-xl font-semibold text-white mb-2">No catches yet!</h3>
@@ -219,9 +371,9 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                       <div key={catch_entry.id} className="bg-gray-800/50 rounded-lg border border-gray-600 overflow-hidden">
                         {/* Photo */}
                         <div className="bg-gray-700 flex items-center justify-center" style={{minHeight: '200px'}}>
-                          {catch_entry.photo ? (
+                          {(catch_entry.photo || catch_entry.photo_url) ? (
                             <img
-                              src={catch_entry.photo}
+                              src={catch_entry.photo_url || catch_entry.photo}
                               alt={`${catch_entry.species} catch`}
                               className="w-full h-auto max-h-64 object-contain rounded-t-lg"
                             />
@@ -361,7 +513,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                   </div>
 
                   {/* Date and Place */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="block text-white text-sm font-semibold mb-2">
                         Date *
@@ -391,7 +543,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                   </div>
 
                   {/* Length and Weight */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="block text-white text-sm font-semibold mb-2">
                         Length (cm)
@@ -460,9 +612,10 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                   <div className="flex gap-4">
                     <button
                       onClick={addCatch}
-                      className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+                      disabled={isUploading}
+                      className="flex-1 py-3 px-6 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white rounded-lg font-semibold transition-colors"
                     >
-                      Save Catch
+                      {isUploading ? 'Saving...' : 'Save Catch'}
                     </button>
                     <button
                       onClick={() => setView('catches')}

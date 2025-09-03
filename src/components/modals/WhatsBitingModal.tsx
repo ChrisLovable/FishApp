@@ -503,7 +503,7 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
         setReports(data)
       } else {
         console.log('📭 No reports found in Supabase')
-        setReports([])
+      setReports([])
       }
     } catch (error) {
       console.error('💥 Error loading reports:', error)

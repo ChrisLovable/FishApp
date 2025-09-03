@@ -133,7 +133,7 @@ const SecondHandStoreModal = ({ isOpen, onClose }: SecondHandStoreModalProps) =>
           isSold: item.is_sold
         }))
         setItems(convertedItems)
-      } else {
+    } else {
         console.log('📭 No items found in Supabase')
         setItems([])
       }
