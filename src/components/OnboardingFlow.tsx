@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import EmailVerificationModal from './modals/EmailVerificationModal'
-import PWAInstallPrompt from './PWAInstallPrompt'
 
 interface OnboardingFlowProps {
   children: React.ReactNode
@@ -8,7 +7,6 @@ interface OnboardingFlowProps {
 
 export default function OnboardingFlow({ children }: OnboardingFlowProps) {
   const [showEmailVerification, setShowEmailVerification] = useState(false)
-  const [showPWAInstall, setShowPWAInstall] = useState(false)
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false)
   const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null)
 
@@ -20,15 +18,6 @@ export default function OnboardingFlow({ children }: OnboardingFlowProps) {
     if (userRegistered === 'true' && email) {
       setVerifiedEmail(email)
       setIsOnboardingComplete(true)
-      
-      // Check if PWA is already installed
-      const pwaInstalled = localStorage.getItem('pwaInstalled')
-      if (pwaInstalled !== 'true') {
-        // Show PWA install prompt after a delay
-        setTimeout(() => {
-          setShowPWAInstall(true)
-        }, 2000)
-      }
     } else {
       // Show email capture for new users
       setShowEmailVerification(true)
@@ -39,26 +28,12 @@ export default function OnboardingFlow({ children }: OnboardingFlowProps) {
     setVerifiedEmail(email)
     setShowEmailVerification(false)
     setIsOnboardingComplete(true)
-    
-    // Show PWA install prompt after email verification
-    setTimeout(() => {
-      setShowPWAInstall(true)
-    }, 1000)
-  }
-
-  const handlePWAInstalled = () => {
-    localStorage.setItem('pwaInstalled', 'true')
-    setShowPWAInstall(false)
+    // No PWA install prompt - just show the app
   }
 
   const handleCloseEmailVerification = () => {
     // Don't allow closing email verification - it's required
     // User must complete verification to use the app
-  }
-
-  const handleClosePWAInstall = () => {
-    setShowPWAInstall(false)
-    // User can skip PWA installation and use the web version
   }
 
   // Show loading state while checking onboarding status
@@ -84,13 +59,6 @@ export default function OnboardingFlow({ children }: OnboardingFlowProps) {
         isOpen={showEmailVerification}
         onVerified={handleEmailVerified}
         onClose={handleCloseEmailVerification}
-      />
-      
-      {/* PWA Install Prompt */}
-      <PWAInstallPrompt
-        isOpen={showPWAInstall}
-        onClose={handleClosePWAInstall}
-        onInstalled={handlePWAInstalled}
       />
     </>
   )

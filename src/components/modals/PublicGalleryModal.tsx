@@ -27,7 +27,7 @@ interface PublicGalleryModalProps {
 const PublicGalleryModal = ({ isOpen, onClose }: PublicGalleryModalProps) => {
   const [catches, setCatches] = useState<CatchData[]>([])
   const [isUploading, setIsUploading] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
 
   const [currentUser, setCurrentUser] = useState('')
