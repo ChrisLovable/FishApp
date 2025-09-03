@@ -46,25 +46,34 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
 
 
-  // South African coastal locations (alphabetically sorted)
+
+  // South African coastal locations (alphabetically sorted) - 36 towns covering full coastline
   const coastalLocations: LocationData[] = [
+    { name: 'Alexander Bay', coordinates: { lat: -28.5833, lng: 16.4833 }, region: 'Northern Cape' },
     { name: 'Arniston', coordinates: { lat: -34.6690, lng: 20.2470 }, region: 'Western Cape' },
     { name: 'Ballito', coordinates: { lat: -29.5392, lng: 31.2136 }, region: 'KwaZulu-Natal' },
+    { name: 'Bettys Bay', coordinates: { lat: -34.3667, lng: 18.9167 }, region: 'Western Cape' },
+    { name: 'Bloubergstrand', coordinates: { lat: -33.8000, lng: 18.4667 }, region: 'Western Cape' },
     { name: 'Cape Town', coordinates: { lat: -33.9249, lng: 18.4241 }, region: 'Western Cape' },
     { name: 'Coffee Bay', coordinates: { lat: -31.9833, lng: 29.1333 }, region: 'Eastern Cape' },
     { name: 'Durban', coordinates: { lat: -29.8587, lng: 31.0218 }, region: 'KwaZulu-Natal' },
     { name: 'East London', coordinates: { lat: -33.0153, lng: 27.9116 }, region: 'Eastern Cape' },
+    { name: 'Fish Hoek', coordinates: { lat: -34.1333, lng: 18.4333 }, region: 'Western Cape' },
     { name: 'Gansbaai', coordinates: { lat: -34.5804, lng: 19.3516 }, region: 'Western Cape' },
+    { name: 'Gordon\'s Bay', coordinates: { lat: -34.1667, lng: 18.8667 }, region: 'Western Cape' },
     { name: 'Hermanus', coordinates: { lat: -34.4187, lng: 19.2345 }, region: 'Western Cape' },
     { name: 'Jeffreys Bay', coordinates: { lat: -34.0489, lng: 24.9111 }, region: 'Eastern Cape' },
     { name: 'Kenton-on-Sea', coordinates: { lat: -33.6890, lng: 26.6830 }, region: 'Eastern Cape' },
     { name: 'Knysna', coordinates: { lat: -34.0361, lng: 23.0471 }, region: 'Western Cape' },
+    { name: 'Kommetjie', coordinates: { lat: -34.1333, lng: 18.3167 }, region: 'Western Cape' },
     { name: 'Langebaan', coordinates: { lat: -33.0975, lng: 18.0265 }, region: 'Western Cape' },
     { name: 'Margate', coordinates: { lat: -30.8647, lng: 30.3733 }, region: 'KwaZulu-Natal' },
+    { name: 'Melkbosstrand', coordinates: { lat: -33.7167, lng: 18.4333 }, region: 'Western Cape' },
     { name: 'Mossel Bay', coordinates: { lat: -34.1817, lng: 22.1460 }, region: 'Western Cape' },
+    { name: 'Muizenberg', coordinates: { lat: -34.1167, lng: 18.4667 }, region: 'Western Cape' },
+    { name: 'Noordhoek', coordinates: { lat: -34.1167, lng: 18.3500 }, region: 'Western Cape' },
     { name: 'Plettenberg Bay', coordinates: { lat: -34.0527, lng: 23.3716 }, region: 'Western Cape' },
     { name: 'Port Alfred', coordinates: { lat: -33.5906, lng: 26.8910 }, region: 'Eastern Cape' },
     { name: 'Port Elizabeth', coordinates: { lat: -33.9608, lng: 25.6022 }, region: 'Eastern Cape' },
@@ -73,17 +82,16 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
     { name: 'Richards Bay', coordinates: { lat: -28.7830, lng: 32.0378 }, region: 'KwaZulu-Natal' },
     { name: 'Saldanha Bay', coordinates: { lat: -33.0117, lng: 17.9442 }, region: 'Western Cape' },
     { name: 'Scottburgh', coordinates: { lat: -30.2867, lng: 30.7533 }, region: 'KwaZulu-Natal' },
+    { name: 'Simon\'s Town', coordinates: { lat: -34.1833, lng: 18.4333 }, region: 'Western Cape' },
     { name: 'St Lucia', coordinates: { lat: -28.3833, lng: 32.4167 }, region: 'KwaZulu-Natal' },
     { name: 'Stilbaai', coordinates: { lat: -34.3677, lng: 21.4189 }, region: 'Western Cape' },
+    { name: 'Strand', coordinates: { lat: -34.1167, lng: 18.8333 }, region: 'Western Cape' },
     { name: 'Umhlanga', coordinates: { lat: -29.7277, lng: 31.0821 }, region: 'KwaZulu-Natal' },
+    { name: 'Velddrif', coordinates: { lat: -32.7833, lng: 18.1667 }, region: 'Western Cape' },
     { name: 'Wilderness', coordinates: { lat: -33.9883, lng: 22.5808 }, region: 'Western Cape' },
   ]
 
-  // Filter locations based on search term
-  const filteredLocations = coastalLocations.filter(location =>
-    location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    location.region.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+
 
 
 
@@ -94,7 +102,10 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
     
     try {
       // WorldTides API with your API key
-      const API_KEY = 'd17abb17-48e7-43d8-9ab9-9be20d1c0110' // Your WorldTides API key
+      const API_KEY = import.meta.env.VITE_WORLDTIDES_API_KEY as string
+      if (!API_KEY) {
+        throw new Error('WorldTides API key not found. Please add VITE_WORLDTIDES_API_KEY to your .env file.')
+      }
       const dateObj = new Date(date)
       const start = Math.floor(dateObj.getTime() / 1000)
       // const end = start + (24 * 60 * 60) // 24 hours later - unused
@@ -146,7 +157,10 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
   // Fetch weather data from WeatherAPI
   const fetchWeatherData = async (location: LocationData) => {
     try {
-      const API_KEY = '7b7daf72b7ee48eb83b105835250109' // Your WeatherAPI key
+      const API_KEY = import.meta.env.VITE_WEATHERAPI_KEY as string
+      if (!API_KEY) {
+        throw new Error('WeatherAPI key not found. Please add VITE_WEATHERAPI_KEY to your .env file.')
+      }
       const response = await fetch(
         `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${location.coordinates.lat},${location.coordinates.lng}&aqi=no`
       )
@@ -177,7 +191,10 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
   // Fetch moon phase and weather data from WeatherAPI
   const fetchMoonPhaseFromAPI = async (location: LocationData, date: string) => {
     try {
-      const API_KEY = '7b7daf72b7ee48eb83b105835250109' // Your WeatherAPI key
+      const API_KEY = import.meta.env.VITE_WEATHERAPI_KEY as string
+      if (!API_KEY) {
+        throw new Error('WeatherAPI key not found. Please add VITE_WEATHERAPI_KEY to your .env file.')
+      }
       const response = await fetch(
         `https://api.weatherapi.com/v1/astronomy.json?key=${API_KEY}&q=${location.coordinates.lat},${location.coordinates.lng}&dt=${date}`
       )
@@ -310,8 +327,8 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl p-2 flex flex-col overflow-y-auto" style={{height: '800px'}}>
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl p-2 flex flex-col overflow-y-auto" style={{height: '680px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-2 flex-shrink-0">
             <h2 className="text-lg font-bold text-white">🌊 Tide, Moon & Weather</h2>
@@ -333,28 +350,16 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
               <div>
                 <h3 className="text-base font-semibold text-white mb-2">Select a Coastal Location</h3>
                 
-                {/* Search */}
-                <div className="relative mb-2">
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search coastal towns..."
-                    className="w-full px-2 py-1 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none text-xs"
-                  />
-
-                </div>
-
-                {/* Location Grid */}
-                <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto pr-1">
-                  {filteredLocations.map((location, index) => (
+                {/* Location Grid - 3 columns */}
+                <div className="grid grid-cols-3 gap-1">
+                  {coastalLocations.map((location, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedLocation(location)}
-                      className="p-1 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg border border-gray-600 text-left transition-colors"
+                      className="p-1 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg border border-gray-600 text-left transition-colors h-11 flex flex-col justify-center"
                     >
-                      <div className="text-white font-semibold text-xs">{location.name}</div>
-                      <div className="text-blue-300 text-xs">{location.region}</div>
+                      <div className="text-white font-semibold text-sm truncate">{location.name}</div>
+                      <div className="text-blue-300 text-xs truncate">{location.region}</div>
                     </button>
                   ))}
                 </div>
@@ -531,7 +536,7 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
             <div className="flex justify-center">
               <button
                 onClick={onClose}
-                className="px-4 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors text-xs"
+                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors text-sm h-12"
               >
                 Return to Main Menu
               </button>

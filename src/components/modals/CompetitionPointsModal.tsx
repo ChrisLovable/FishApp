@@ -563,11 +563,11 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '800px'}}>
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '680px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6 flex-shrink-0">
-            <h2 className="text-2xl font-bold text-white">🏆 Competition Points Calculator</h2>
+            <h2 className="text-2xl font-bold text-white text-center flex-1">🏆 Competition Points Calculator</h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors p-2"
@@ -582,24 +582,26 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
           <div className="flex-1 overflow-y-auto overscroll-contain">
             <div className="space-y-6 pr-1">
               {/* Points Summary */}
-              <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-lg border border-yellow-500/50 p-6">
-                <h3 className="text-xl font-bold text-white mb-4">📊 Competition Summary</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="text-center">
-                    <div className="text-yellow-200 font-semibold">Total Points</div>
-                    <div className="text-white text-2xl font-bold">{totalPoints.toFixed(2)}</div>
+              <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-lg border border-yellow-500/50 p-6" style={{height: '250px'}}>
+                <div className="flex flex-col h-full">
+                  <h3 className="text-xl font-bold text-white mb-4">📊 Competition Summary</h3>
+                  
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div className="grid grid-cols-2 gap-8 mb-6">
+                      <div className="text-center">
+                        <div className="text-yellow-200 font-semibold mb-2">Total Points</div>
+                        <div className="text-white text-4xl font-bold">{totalPoints.toFixed(2)}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-yellow-200 font-semibold mb-2">Total Fish</div>
+                        <div className="text-white text-4xl font-bold">{totalFish}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-yellow-200 font-semibold">Total Weight</div>
-                    <div className="text-white text-2xl font-bold">{totalWeight.toFixed(2)} kg</div>
+                  
+                  <div className="text-center text-sm text-yellow-100">
+                    🎯 Edible species = 2x points | Non-edible species = 1x points
                   </div>
-                  <div className="text-center">
-                    <div className="text-yellow-200 font-semibold">Total Fish</div>
-                    <div className="text-white text-2xl font-bold">{totalFish}</div>
-                  </div>
-                </div>
-                <div className="mt-4 text-center text-sm text-yellow-100">
-                  🎯 Edible species = 2x points | Non-edible species = 1x points
                 </div>
               </div>
 

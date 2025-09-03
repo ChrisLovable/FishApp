@@ -17,13 +17,7 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Check file size (limit to 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        setError('Image size must be less than 10MB')
-        return
-      }
-
-      // Check file type - support all common phone image formats
+      // Check file type - support all common mobile gallery formats
       const supportedTypes = [
         'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 
         'image/heic', 'image/heif', 'image/tiff', 'image/bmp'
@@ -87,26 +81,27 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div className="relative w-full max-w-sm mx-auto" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl p-4 flex flex-col overflow-y-auto" style={{height: '800px'}}>
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4 flex-shrink-0">
-            <h2 className="text-xl font-bold text-white">🔍 Identify Fish</h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors p-2"
-                aria-label="Close modal"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+    <div className="fixed inset-0 z-50 modal-overlay">
+      <div className="w-full h-full flex items-center justify-center p-4">
+              <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '680px'}}>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+              <h2 className="text-xl font-bold text-white">🔍 Identify Fish</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-white transition-colors p-2"
+                  aria-label="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">
+            <div className="modal-scrollable">
             <div className="space-y-4">
               {/* Upload Section */}
               <div className="bg-blue-900/30 rounded-lg border border-blue-500/50 p-6">
@@ -116,16 +111,15 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                   <div className="text-center">
                     <div className="border-2 border-dashed border-blue-400 rounded-lg p-6 mb-4">
                       <div className="text-5xl mb-3">📸</div>
-                      <p className="text-blue-200 mb-3 text-sm">Take a photo or select from gallery</p>
-                      <p className="text-gray-400 text-xs mb-4">Supports JPEG, PNG, WebP, HEIC formats</p>
-                                             <input
-                         ref={fileInputRef}
-                         type="file"
-                         accept="image/*,image/heic,image/heif"
-                         capture="environment"
-                         onChange={handleImageSelect}
-                         className="hidden"
-                       />
+                                             <p className="text-blue-200 mb-3 text-sm">Select photo from gallery</p>
+                       <p className="text-gray-400 text-xs mb-4">Supports JPEG, PNG, WebP, HEIC formats</p>
+                                              <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp"
+                          onChange={handleImageSelect}
+                          className="hidden"
+                        />
                       <button
                         onClick={() => fileInputRef.current?.click()}
                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
@@ -259,17 +253,8 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                   {/* Action Buttons */}
                   <div className="flex gap-3">
                     <button
-                      onClick={() => {
-                        // TODO: Navigate to species info
-                        alert(`Viewing details for ${identificationResult.species}`)
-                      }}
-                      className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                    >
-                      View Species Info
-                    </button>
-                    <button
                       onClick={resetIdentification}
-                      className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors"
+                      className="w-full px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors"
                     >
                       Identify Another
                     </button>
@@ -288,6 +273,7 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                   <li>• Multiple angles can improve accuracy</li>
                 </ul>
               </div>
+            </div>
             </div>
           </div>
         </div>

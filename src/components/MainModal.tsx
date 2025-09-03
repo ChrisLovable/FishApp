@@ -43,9 +43,8 @@ const MainModal = ({ isOpen, onClose }: MainModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div className="relative w-full max-w-full" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        {/* Main Modal Content */}
-        <div className="modal-content rounded-2xl p-4 flex flex-col" style={{height: '800px'}}>
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '680px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h2 className="text-xl font-bold text-white">FishApp Menu</h2>
@@ -62,22 +61,19 @@ const MainModal = ({ isOpen, onClose }: MainModalProps) => {
 
           {/* Scrollable Content Area */}
           <div className="flex-1 overflow-y-auto overscroll-contain">
-            <div className="space-y-2">
+            <div className="space-y-4 p-1">
               <LengthToWeightButton onClick={() => handleButtonClick('length-to-weight')} />
               <SpeciesInfoButton onClick={() => handleButtonClick('species-info')} />
               <IdentifyFishButton onClick={() => handleButtonClick('identify-fish')} />
               <WhatsBitingButton onClick={() => handleButtonClick('whats-biting')} />
               <CompetitionPointsButton onClick={() => handleButtonClick('competition-points')} />
               <PersonalGalleryButton onClick={() => handleButtonClick('personal-gallery')} />
-
               <PublicGalleryButton onClick={() => handleButtonClick('public-gallery')} />
               <SecondHandStoreButton onClick={() => handleButtonClick('second-hand-store')} />
               <TideAndMoonButton onClick={() => handleButtonClick('tide-and-moon')} />
               <EBookButton onClick={() => handleButtonClick('e-book')} />
             </div>
           </div>
-
-
         </div>
       </div>
 

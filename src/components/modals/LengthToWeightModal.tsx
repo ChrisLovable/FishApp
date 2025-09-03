@@ -66,8 +66,24 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
             ' Intercept ': row.intercept !== null ? row.intercept : 0
           }))
           
-          setSpecies(convertedData)
-          console.log('✅ Species data set successfully. First few species:', convertedData.slice(0, 3))
+          // Remove duplicates based on English name
+          const uniqueData = convertedData.filter((species, index, self) => 
+            index === self.findIndex(s => s['English name'] === species['English name'])
+          )
+          
+          console.log(`✅ Removed ${convertedData.length - uniqueData.length} duplicate species from Length-to-Weight`)
+          
+          // Final check for any remaining duplicates
+          const finalNames = uniqueData.map(s => s['English name'])
+          const finalDuplicates = finalNames.filter((name, index) => finalNames.indexOf(name) !== index)
+          if (finalDuplicates.length > 0) {
+            console.log('🚨 STILL HAVE DUPLICATES AFTER CLEANUP:', finalDuplicates)
+          } else {
+            console.log('✅ No duplicates remaining after cleanup')
+          }
+          
+          setSpecies(uniqueData)
+          console.log('✅ Species data set successfully. First few species:', uniqueData.slice(0, 3))
           return
         } else {
           console.log('⚠️ No data found in Supabase, falling back to local data')
@@ -88,8 +104,25 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
       const response = await fetch('/speciesData.json')
       if (response.ok) {
         const data = await response.json()
-        setSpecies(data)
-        console.log('✅ Local species data loaded successfully. Count:', data.length, 'First few species:', data.slice(0, 3))
+        
+        // Remove duplicates based on English name
+        const uniqueData = data.filter((species, index, self) => 
+          index === self.findIndex(s => s['English name'] === species['English name'])
+        )
+        
+        console.log(`✅ Removed ${data.length - uniqueData.length} duplicate species from local Length-to-Weight data`)
+        
+        // Final check for any remaining duplicates
+        const finalNames = uniqueData.map(s => s['English name'])
+        const finalDuplicates = finalNames.filter((name, index) => finalNames.indexOf(name) !== index)
+        if (finalDuplicates.length > 0) {
+          console.log('🚨 STILL HAVE DUPLICATES AFTER LOCAL CLEANUP:', finalDuplicates)
+        } else {
+          console.log('✅ No duplicates remaining after local cleanup')
+        }
+        
+        setSpecies(uniqueData)
+        console.log('✅ Local species data loaded successfully. Count:', uniqueData.length, 'First few species:', uniqueData.slice(0, 3))
       } else {
         console.warn('Species data file not found')
         // Fallback placeholder data
@@ -108,10 +141,32 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
     }
   }
 
-  // Filter species based on search term (wildcard search)
-  const filteredSpecies = species.filter(fish =>
-    fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Filter species based on search term (wildcard search) and remove duplicates
+  const filteredSpecies = species
+    .filter(fish =>
+      fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((fish, index, self) =>
+      index === self.findIndex(f => f['English name'] === fish['English name'])
+    )
+
+  // Debug: Check for duplicates when searching for "bigeye"
+  if (searchTerm.toLowerCase().includes('bigeye')) {
+    console.log('🔍 Length-to-Weight: Searching for "bigeye"')
+    console.log('🔍 Total species loaded:', species.length)
+    console.log('🔍 Filtered species count:', filteredSpecies.length)
+    const bigeyeEntries = filteredSpecies.filter(f => f['English name'].toLowerCase().includes('bigeye'))
+    console.log('🔍 Bigeye entries found:', bigeyeEntries.length, bigeyeEntries.map(f => f['English name']))
+    
+    // Check for exact duplicates
+    const allNames = species.map(s => s['English name'])
+    const duplicateNames = allNames.filter((name, index) => allNames.indexOf(name) !== index)
+    if (duplicateNames.length > 0) {
+      console.log('🚨 EXACT DUPLICATES FOUND:', duplicateNames)
+    } else {
+      console.log('✅ No exact duplicates found in species data')
+    }
+  }
 
 
 
@@ -180,8 +235,8 @@ const LengthToWeightModal = ({ isOpen, onClose }: LengthToWeightModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay">
-      <div className="relative w-full mx-2" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '800px'}}>
+      <div className="relative w-full mx-2" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '680px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">📏 Length-to-Weight</h2>

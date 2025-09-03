@@ -42,9 +42,6 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
   const [speciesData, setSpeciesData] = useState<SpeciesData[]>([])
   const [currentSpecies, setCurrentSpecies] = useState<SpeciesData | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [length, setLength] = useState('')
-  const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null)
-
 
   // Load species data on component mount
   useEffect(() => {
@@ -86,26 +83,47 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
         } else if (supabaseData && supabaseData.length > 0) {
           console.log(`✅ Loaded ${supabaseData.length} species from Supabase`)
           
-          // Convert Supabase data to the expected format
-          const convertedData = supabaseData.map((row: any) => ({
-            'English name': row.english_name || '',
-            'Afrikaans name': row.afrikaans_name || '',
-            'Scientific name': row.scientific_name || '',
-            'Image': row.photo_name || '',
-            'Distribution Map': row.distribution_map || '',
-            ' Slope ': row.slope || 0,
-            ' Intercept ': row.intercept || 0,
-            'Description': row.notes || '',
-            'Distribution': row.distribution || '',
-            regulations: {
-              sizeLimit: row.size_limit || '',
-              bagLimit: row.bag_limit || '',
-              closedSeason: row.closed_season || ''
-            },
-            detailedDescription: row.notes || ''
-          }))
+          // Load local data to get slope/intercept values
+          const localData = await loadLocalSpeciesDataForSlopeIntercept()
+          console.log('🔍 Local data loaded:', localData.length, 'species')
+          const localSpeciesMap = new Map()
+          localData.forEach((species: any) => {
+            localSpeciesMap.set(species['English name'], species)
+          })
+          console.log('🔍 Local species map size:', localSpeciesMap.size)
           
-          setSpeciesData(convertedData)
+          // Convert Supabase data to the expected format
+          const convertedData = supabaseData.map((row: any) => {
+            const localSpecies = localSpeciesMap.get(row.english_name)
+            return {
+              'English name': row.english_name || '',
+              'Afrikaans name': row.afrikaans_name || '',
+              'Scientific name': row.scientific_name || '',
+              'Image': row.photo_name || '',
+              'Distribution Map': row.distribution_map || '',
+              ' Slope ': localSpecies?.[' Slope '] || (row.slope ? parseFloat(row.slope) : null),
+              ' Intercept ': localSpecies?.[' Intercept '] || (row.intercept ? parseFloat(row.intercept) : null),
+              'Description': row.notes || '',
+              'Distribution': row.distribution || '',
+              regulations: {
+                sizeLimit: row.size_limit || '',
+                bagLimit: row.bag_limit || '',
+                closedSeason: row.closed_season || ''
+              },
+              detailedDescription: row.notes || ''
+            }
+          })
+          
+          // Remove duplicates based on English name
+          const uniqueData = convertedData.filter((species, index, self) => 
+            index === self.findIndex(s => s['English name'] === species['English name'])
+          )
+          
+          console.log(`✅ Removed ${convertedData.length - uniqueData.length} duplicate species`)
+          console.log('🔍 Checking for Bigeye kingfish duplicates:')
+          const bigeyeEntries = uniqueData.filter(s => s['English name'] === 'Bigeye kingfish')
+          console.log('Bigeye kingfish entries:', bigeyeEntries.length, bigeyeEntries)
+          setSpeciesData(uniqueData)
           return
         } else {
           console.log('⚠️ No data found in Supabase, falling back to local data')
@@ -118,6 +136,22 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
     } catch (error) {
       console.error('❌ Error loading species data:', error)
       await loadLocalSpeciesData()
+    }
+  }
+
+  const loadLocalSpeciesDataForSlopeIntercept = async () => {
+    try {
+      const response = await fetch('/speciesData.json')
+      if (response.ok) {
+        const data = await response.json()
+        return data
+      } else {
+        console.warn('Species data file not found')
+        return []
+      }
+    } catch (error) {
+      console.error('Error loading local species data:', error)
+      return []
     }
   }
 
@@ -197,7 +231,14 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
           }
           return species
         })
-        setSpeciesData(enhancedData)
+        
+        // Remove duplicates based on English name
+        const uniqueData = enhancedData.filter((species, index, self) => 
+          index === self.findIndex(s => s['English name'] === species['English name'])
+        )
+        
+        console.log(`✅ Removed ${enhancedData.length - uniqueData.length} duplicate species from local data`)
+        setSpeciesData(uniqueData)
       } else {
         console.warn('Species data file not found')
         setSpeciesData([])
@@ -208,49 +249,26 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
     }
   }
 
-  // Filter species based on search term
-  const filteredSpecies = speciesData.filter(fish =>
-    fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Filter species based on search term and remove any remaining duplicates
+  const filteredSpecies = speciesData
+    .filter(fish =>
+      fish['English name'].toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((fish, index, self) => 
+      index === self.findIndex(f => f['English name'] === fish['English name'])
+    )
 
-
-
-  // Calculate weight using the same formula as Length-to-Weight modal
-  const calculateWeight = () => {
-    if (currentSpecies && length) {
-      const lengthNum = parseFloat(length)
-      if (!isNaN(lengthNum) && lengthNum > 0) {
-        try {
-          const slope = currentSpecies[' Slope ']
-          const intercept = currentSpecies[' Intercept ']
-          const weight = Math.exp(slope + Math.log(lengthNum) * intercept)
-          
-          if (isFinite(weight) && weight > 0) {
-            setCalculatedWeight(weight)
-          } else {
-            setCalculatedWeight(null)
-          }
-        } catch (error) {
-          console.error('Calculation error:', error)
-          setCalculatedWeight(null)
-        }
-      }
-    }
+  // Debug: Check for duplicates in filtered results
+  if (searchTerm.toLowerCase().includes('bigeye')) {
+    console.log('🔍 Filtered species for "bigeye":', filteredSpecies.filter(f => f['English name'].toLowerCase().includes('bigeye')))
   }
-
-  const resetCalculation = () => {
-    setLength('')
-    setCalculatedWeight(null)
-  }
-
-
 
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '800px'}}>
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '680px'}}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6 flex-shrink-0">
             <h2 className="text-2xl font-bold text-white">🐠 Species Information</h2>
@@ -312,7 +330,6 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                     onClick={() => {
                       setCurrentSpecies(null)
                       setSearchTerm('')
-                      resetCalculation()
                     }}
                     className="text-blue-300 hover:text-white text-sm flex items-center"
                   >
@@ -332,7 +349,7 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                 </div>
 
                 {/* Images Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 gap-4 mb-6">
                   {/* Fish Image */}
                   <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4">
                     <h3 className="text-sm font-semibold text-white mb-3">Fish Image</h3>
@@ -428,71 +445,18 @@ const SpeciesInfoModal = ({ isOpen, onClose, selectedSpecies }: SpeciesInfoModal
                     </div>
                   </div>
                 )}
-
-                {/* Length-to-Weight Calculator */}
-                <div className="bg-purple-900/30 rounded-lg border border-purple-500/50 p-6">
-                  <h3 className="text-lg font-bold text-white mb-4">📏 Length-to-Weight Calculator</h3>
-                  
-                  <div className="space-y-4">
-                    {/* Length Input */}
-                    <div>
-                      <label className="block text-white text-sm font-semibold mb-2">
-                        Fish Length (cm)
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          value={length}
-                          onChange={(e) => setLength(e.target.value)}
-                          placeholder="Enter length in centimeters..."
-                          className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none"
-                          step="0.1"
-                          min="0"
-                        />
-
-                      </div>
-                    </div>
-
-                    {/* Calculate Button */}
-                    <div className="flex gap-3">
-                      <button
-                        onClick={calculateWeight}
-                        disabled={!length}
-                        className="flex-1 py-3 px-6 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-semibold transition-colors"
-                      >
-                        Calculate Weight
-                      </button>
-                      <button
-                        onClick={resetCalculation}
-                        className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors"
-                      >
-                        Reset
-                      </button>
-                    </div>
-
-                    {/* Result */}
-                    {calculatedWeight !== null && (
-                      <div className="p-4 bg-purple-800/30 rounded-lg border border-purple-400/50">
-                        <h4 className="text-white font-semibold mb-2">Calculated Weight:</h4>
-                        <p className="text-purple-200 text-2xl font-bold">
-                          {calculatedWeight.toFixed(3)} kg
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </>
             )}
 
-                         {/* Return Button */}
-             <div className="flex justify-center">
-               <button
-                 onClick={onClose}
-                 className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
-               >
-                 Return to Main Menu
-               </button>
-             </div>
+              {/* Return Button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={onClose}
+                  className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
+                >
+                  Return to Main Menu
+                </button>
+              </div>
             </div>
           </div>
         </div>

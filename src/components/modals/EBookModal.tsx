@@ -122,9 +122,9 @@ We'll contact you within 24 hours to arrange payment and delivery.
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl flex flex-col overflow-y-auto" style={{height: '800px'}}>
-          {/* Header */}
+      <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl flex flex-col" style={{height: '680px'}}>
+          {/* Fixed Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-600 flex-shrink-0">
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-bold text-white">📚 Fishing E-book</h2>
@@ -144,7 +144,7 @@ We'll contact you within 24 hours to arrange payment and delivery.
             </button>
           </div>
 
-          {/* Purchase Buttons */}
+          {/* Fixed Purchase Buttons */}
           <div className="p-4 border-b border-gray-600 flex-shrink-0 space-y-3">
             <button
               onClick={() => {
@@ -169,7 +169,7 @@ We'll contact you within 24 hours to arrange payment and delivery.
           {/* Purchase Form Modal */}
           {showPurchaseForm && (
             <div className="fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-50 p-4">
-              <div className="bg-gray-800 rounded-2xl p-6 w-full" style={{maxWidth: '414px'}}>
+              <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
                 <h3 className="text-xl font-bold text-white mb-2">
                   Purchase {purchaseType === 'ebook' ? 'E-book' : 'Hard Copy'}
                 </h3>
@@ -246,11 +246,11 @@ We'll contact you within 24 hours to arrange payment and delivery.
             </div>
           )}
 
-          {/* PDF Viewer - Using iframe as fallback */}
-          <div className="flex-1 overflow-hidden p-2">
+          {/* Scrollable PDF Viewer */}
+          <div className="flex-1 overflow-y-auto overscroll-contain p-2">
             <iframe
               src={`${pdfFile}#page=${currentPage}&toolbar=0&navpanes=0&scrollbar=0`}
-              className="w-full h-full border-0 rounded"
+              className="w-full h-full min-h-[400px] border-0 rounded"
               title="Fishing E-book"
             />
           </div>

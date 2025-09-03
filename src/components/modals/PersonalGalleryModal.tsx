@@ -100,9 +100,14 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Check file size (limit to 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Photo size must be less than 5MB')
+      // Check file type - support all common mobile gallery formats
+      const supportedTypes = [
+        'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 
+        'image/heic', 'image/heif', 'image/tiff', 'image/bmp'
+      ]
+      
+      if (!supportedTypes.includes(file.type.toLowerCase())) {
+        alert('Please select a valid image file (JPEG, PNG, WebP, HEIC, etc.)')
         return
       }
 
@@ -164,34 +169,35 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
-      <div className="relative w-full mx-2" style={{maxWidth: '414px', maxHeight: '800px'}}>
-        <div className="modal-content rounded-2xl p-6 flex flex-col overflow-y-auto" style={{height: '800px'}}>
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">📱 Personal Catches</h2>
-            <div className="flex items-center gap-4">
-              {view === 'catches' && (
+    <div className="fixed inset-0 z-50 modal-overlay">
+      <div className="w-full h-full flex items-center justify-center p-4">
+              <div className="relative w-full mx-1" style={{maxWidth: '414px', maxHeight: '680px'}}>
+        <div className="modal-content rounded-2xl p-6 flex flex-col" style={{height: '680px'}}>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 flex-shrink-0">
+              <h2 className="text-2xl font-bold text-white">📱 Personal Catches</h2>
+              <div className="flex items-center gap-4">
+                {view === 'catches' && (
+                  <button
+                    onClick={() => setView('add')}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+                  >
+                    + Add Catch
+                  </button>
+                )}
                 <button
-                  onClick={() => setView('add')}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-white transition-colors p-2"
+                  aria-label="Close modal"
                 >
-                  + Add Catch
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
-              )}
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors p-2"
-                aria-label="Close modal"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              </div>
             </div>
-          </div>
 
-          <div className="flex-1">
+            <div className="modal-scrollable">
             {view === 'catches' ? (
               /* Gallery View */
               <div>
@@ -208,7 +214,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 gap-6">
                     {catches.map((catch_entry) => (
                       <div key={catch_entry.id} className="bg-gray-800/50 rounded-lg border border-gray-600 overflow-hidden">
                         {/* Photo */}
@@ -302,17 +308,16 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                           >
                             Upload Photo
                           </button>
-                          <p className="text-sm text-gray-400 mt-2">Max 5MB</p>
+                                                     <p className="text-sm text-gray-400 mt-2">Select from gallery</p>
                         </div>
                       )}
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handlePhotoUpload}
-                        className="hidden"
-                        capture="environment"
-                      />
+                                             <input
+                         ref={fileInputRef}
+                         type="file"
+                         accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp"
+                         onChange={handlePhotoUpload}
+                         className="hidden"
+                       />
                     </div>
                   </div>
 
@@ -469,6 +474,7 @@ const PersonalGalleryModal = ({ isOpen, onClose }: PersonalGalleryModalProps) =>
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>

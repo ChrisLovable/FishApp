@@ -50,17 +50,24 @@ const compressImage = (base64: string, maxWidth: number = 1024, quality: number 
 export const identifyFishWithOpenAI = async (imageBase64: string): Promise<FishIdentificationResult> => {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY as string
   
+  console.log('🔍 Starting fish identification...')
+  console.log('🔑 API Key available:', !!apiKey)
+  
   if (!apiKey) {
+    console.error('❌ OpenAI API key not found')
     throw new Error('OpenAI API key not found. Please add VITE_OPENAI_API_KEY to your .env file.')
   }
 
   // Compress image for better mobile performance and API efficiency
-  const compressedImage = await compressImage(imageBase64, 1024, 0.8)
+  // Use higher quality for better identification accuracy
+  const compressedImage = await compressImage(imageBase64, 1200, 0.9)
   
   // Remove data URL prefix if present
   const base64Data = compressedImage.replace(/^data:image\/[a-z]+;base64,/, '')
 
-  const prompt = `You are an expert marine biologist specializing in South African fish species. Analyze this fish photo and identify the species.
+  const prompt = `You are an expert marine biologist specializing in South African fish species identification. Analyze this fish photo with extreme precision.
+
+CRITICAL: Focus ONLY on South African marine fish species. This is for a South African fishing app.
 
 Please respond with a JSON object in this exact format:
 {
@@ -79,22 +86,35 @@ Please respond with a JSON object in this exact format:
   ]
 }
 
-Focus on these South African fish species categories:
-- Breams (Bronze bream, Red roman, etc.)
-- Kob (Common kob, Dusky kob, etc.)
-- Sharks (Bronze whaler, Ragged-tooth, etc.)
-- Rays (Eagle ray, Blue stingray, etc.)
-- Game fish (Yellowfin tuna, Marlin, etc.)
-- Reef fish (Butterfly fish, Angelfish, etc.)
+PRIORITY South African fish species to consider:
+- Breams: Bronze bream, Red roman, White steenbras, Black musselcracker, White musselcracker
+- Kob: Common kob, Dusky kob, Silver kob
+- Sharks: Bronze whaler, Ragged-tooth shark, Spotted ragged-tooth shark, Copper shark, Smooth-hound shark
+- Rays: Eagle ray, Blue stingray, Black stingray, Diamond ray
+- Game fish: Yellowfin tuna, Marlin, Sailfish, Kingfish
+- Reef fish: Butterfly fish, Angelfish, Wrasse
+- Other: Galjoen, Garrick, Shad, Blacktail, Cape stumpnose
 
-Be specific about:
-- Body shape and size
-- Coloration and patterns
-- Fin characteristics
-- Scale patterns
-- Any distinctive markings
+IDENTIFICATION CRITERIA (be very specific):
+- Body shape and proportions
+- Coloration and patterns (exact colors and markings)
+- Fin characteristics (dorsal, pectoral, caudal fin shapes)
+- Scale patterns and texture
+- Head shape and mouth position
+- Eye characteristics
+- Any distinctive markings, spots, or stripes
 
-If the image is unclear or doesn't show a fish, set confidence to 0 and species to "Unable to identify".`
+CONFIDENCE GUIDELINES:
+- 90-100%: Absolutely certain, all key features match perfectly
+- 80-89%: Very confident, most features match
+- 70-79%: Confident, good match but some uncertainty
+- 60-69%: Somewhat confident, reasonable match
+- 50-59%: Uncertain, possible match
+- Below 50%: Low confidence, likely incorrect
+
+If the image is unclear, doesn't show a fish, or shows a non-South African species, set confidence to 0 and species to "Unable to identify".
+
+Be extremely careful with shark identification - many species look similar but have key differences.`
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -123,8 +143,8 @@ If the image is unclear or doesn't show a fish, set confidence to 0 and species 
             ]
           }
         ],
-        max_tokens: 1000,
-        temperature: 0.1
+        max_tokens: 1500,
+        temperature: 0.05
       })
     })
 
@@ -136,7 +156,11 @@ If the image is unclear or doesn't show a fish, set confidence to 0 and species 
     const data: OpenAIResponse = await response.json()
     const content = data.choices[0]?.message?.content
 
+    console.log('📡 OpenAI API response received')
+    console.log('📝 Response content length:', content?.length || 0)
+
     if (!content) {
+      console.error('❌ No content in OpenAI response')
       throw new Error('No response from OpenAI API')
     }
 
@@ -157,7 +181,7 @@ If the image is unclear or doesn't show a fish, set confidence to 0 and species 
         throw new Error('Invalid response format from OpenAI')
       }
 
-      return {
+      const finalResult = {
         species: result.species,
         confidence: Math.round(result.confidence),
         alternativeSpecies: result.alternativeSpecies || [],
@@ -165,6 +189,14 @@ If the image is unclear or doesn't show a fish, set confidence to 0 and species 
         scientificName: result.scientificName,
         commonNames: result.commonNames
       }
+      
+      console.log('✅ Fish identification successful:', {
+        species: finalResult.species,
+        confidence: finalResult.confidence,
+        scientificName: finalResult.scientificName
+      })
+      
+      return finalResult
     } catch (parseError) {
       // If JSON parsing fails, try to extract information from text
       console.warn('Failed to parse JSON response, attempting text extraction:', parseError)
