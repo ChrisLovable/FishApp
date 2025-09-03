@@ -84,7 +84,7 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
       })
       
       // Also show on screen for mobile debugging
-      setError(`Debug: API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0}`)
+      setDebugInfo(`API Key exists: ${!!apiKey}, Length: ${apiKey?.length || 0}`)
       
       if (!apiKey) {
         throw new Error('OpenAI API key not found. Please check your environment configuration.')
