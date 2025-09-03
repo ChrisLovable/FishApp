@@ -7,7 +7,7 @@ const LengthToWeightButton = ({ onClick }: LengthToWeightButtonProps) => {
     <button
       onClick={onClick}
       className="w-full rounded-xl flex items-center justify-start p-3 text-white hover:scale-105 active:scale-95 transition-all duration-300"
-              style={{height: '41px', background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%)'}}
+              style={{height: '41px', background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)'}}
       aria-label="Length to Weight Calculator"
     >
       <div className="text-2xl mr-3">📏</div>
