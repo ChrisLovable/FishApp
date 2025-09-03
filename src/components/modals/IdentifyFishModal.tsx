@@ -72,13 +72,18 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
       // Clear any previous value to ensure fresh selection
       fileInputRef.current.value = ''
       
-      // On mobile devices, try to force gallery selection
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      // Force gallery selection on ALL devices (mobile and desktop)
+      fileInputRef.current.setAttribute('capture', 'none')
+      fileInputRef.current.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp')
       
+      // Additional mobile-specific attributes to force gallery
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       if (isMobile) {
-        // For mobile, we'll try to ensure it opens gallery by setting specific attributes
+        // Remove any camera-related attributes
+        fileInputRef.current.removeAttribute('capture')
         fileInputRef.current.setAttribute('capture', 'none')
-        fileInputRef.current.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp')
+        // Force accept only gallery files
+        fileInputRef.current.setAttribute('accept', 'image/*')
       }
       
       // Trigger click with a small delay to ensure proper handling
@@ -173,6 +178,7 @@ const IdentifyFishModal = ({ isOpen, onClose }: IdentifyFishModalProps) => {
                           ref={fileInputRef}
                           type="file"
                           accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,image/tiff,image/bmp"
+                          capture="none"
                           onChange={handleImageSelect}
                           className="hidden"
                           style={{ display: 'none' }}
