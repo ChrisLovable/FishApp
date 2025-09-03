@@ -70,8 +70,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
     // Build URL with all required parameters
     const params = new URLSearchParams({
-      heights: '',
-      extremes: '',
+      heights: 'true',
+      extremes: 'true',
       lat: latNum.toString(),
       lon: lonNum.toString(),
       key: apiKey
