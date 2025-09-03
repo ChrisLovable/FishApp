@@ -136,7 +136,17 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
           throw new Error('No tide data available for this location')
         }
       } else {
-        const errorData = await response.json()
+        const errorText = await response.text()
+        console.error('Tide API Error Response:', errorText)
+        
+        // Try to parse as JSON, fallback to text
+        let errorData
+        try {
+          errorData = JSON.parse(errorText)
+        } catch {
+          errorData = { error: errorText }
+        }
+        
         throw new Error(errorData.error || 'Failed to fetch tide data')
       }
     } catch (err) {
@@ -178,6 +188,8 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
           icon: current.condition.icon
         }
       } else {
+        const errorText = await response.text()
+        console.error('Weather API Error Response:', errorText)
         throw new Error('Failed to fetch weather data')
       }
     } catch (error) {
@@ -207,6 +219,8 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
           sunset: astronomy.sunset
         }
       } else {
+        const errorText = await response.text()
+        console.error('Moon API Error Response:', errorText)
         throw new Error('Failed to fetch moon data from WeatherAPI')
       }
     } catch (error) {
