@@ -95,23 +95,17 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
 
 
 
-  // Fetch tide data from WorldTides API
+  // Fetch tide data from serverless API
   const fetchTideData = async (location: LocationData, date: string) => {
     setLoading(true)
     setError(null)
     
     try {
-      // WorldTides API with your API key
-      const API_KEY = import.meta.env.VITE_WORLDTIDES_API_KEY as string
-      if (!API_KEY) {
-        throw new Error('WorldTides API key not found. Please add VITE_WORLDTIDES_API_KEY to your .env file.')
-      }
       const dateObj = new Date(date)
       const start = Math.floor(dateObj.getTime() / 1000)
-      // const end = start + (24 * 60 * 60) // 24 hours later - unused
       
       const response = await fetch(
-        `https://www.worldtides.info/api/v3?extremes&lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&start=${start}&length=86400&key=${API_KEY}`
+        `/api/tides?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}`
       )
 
       if (response.ok) {
@@ -154,15 +148,11 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
     }
   }
 
-  // Fetch weather data from WeatherAPI
+  // Fetch weather data from serverless API
   const fetchWeatherData = async (location: LocationData) => {
     try {
-      const API_KEY = import.meta.env.VITE_WEATHERAPI_KEY as string
-      if (!API_KEY) {
-        throw new Error('WeatherAPI key not found. Please add VITE_WEATHERAPI_KEY to your .env file.')
-      }
       const response = await fetch(
-        `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${location.coordinates.lat},${location.coordinates.lng}&aqi=no`
+        `/api/weather?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}`
       )
 
       if (response.ok) {
@@ -188,15 +178,11 @@ const TideAndMoonModal = ({ isOpen, onClose }: TideAndMoonModalProps) => {
     }
   }
 
-  // Fetch moon phase and weather data from WeatherAPI
+  // Fetch moon phase and weather data from serverless API
   const fetchMoonPhaseFromAPI = async (location: LocationData, date: string) => {
     try {
-      const API_KEY = import.meta.env.VITE_WEATHERAPI_KEY as string
-      if (!API_KEY) {
-        throw new Error('WeatherAPI key not found. Please add VITE_WEATHERAPI_KEY to your .env file.')
-      }
       const response = await fetch(
-        `https://api.weatherapi.com/v1/astronomy.json?key=${API_KEY}&q=${location.coordinates.lat},${location.coordinates.lng}&dt=${date}`
+        `/api/weather?lat=${location.coordinates.lat}&lon=${location.coordinates.lng}&type=astronomy&date=${date}`
       )
 
       if (response.ok) {
