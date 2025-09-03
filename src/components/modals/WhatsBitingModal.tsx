@@ -512,8 +512,76 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
     }
   }
 
-  // Get unique towns from the reports for the dropdown
-  const availableTowns = Array.from(new Set(reports.map(report => report.nearest_town).filter(Boolean))).sort()
+  // South African fishing towns for the dropdown
+  const saFishingTowns = [
+    'Kosi Bay',
+    'Sodwana Bay', 
+    'St Lucia',
+    'Cape Vidal',
+    'Mapelane',
+    'Richards Bay',
+    'Mtunzini',
+    'Ballito',
+    'Durban',
+    'Amanzimtoti',
+    'Scottburgh',
+    'Port Shepstone',
+    'Margate',
+    'Ramsgate',
+    'Port Edward',
+    'Port St Johns',
+    'Coffee Bay',
+    'Hole in the Wall',
+    'East London',
+    'Port Alfred',
+    'Grahamstown',
+    'Port Elizabeth',
+    'Jeffreys Bay',
+    'Plettenberg Bay',
+    'Knysna',
+    'Sedgefield',
+    'Wilderness',
+    'George',
+    'Mossel Bay',
+    'Still Bay',
+    'Witsand',
+    'Cape Agulhas',
+    'Gansbaai',
+    'Hermanus',
+    'Betty\'s Bay',
+    'Kalk Bay',
+    'Simon\'s Town',
+    'Cape Town',
+    'Hout Bay',
+    'Llandudno',
+    'Camps Bay',
+    'Sea Point',
+    'Milnerton',
+    'Bloubergstrand',
+    'Melkbosstrand',
+    'Yzerfontein',
+    'Darling',
+    'Langebaan',
+    'Saldanha Bay',
+    'Vredenburg',
+    'Paternoster',
+    'St Helena Bay',
+    'Velddrif',
+    'Laaiplek',
+    'Elands Bay',
+    'Lambert\'s Bay',
+    'Doringbaai',
+    'Lutzville',
+    'Vredendal',
+    'Port Nolloth',
+    'Alexander Bay'
+  ]
+
+  // Get unique towns from the reports for the dropdown, combined with SA fishing towns
+  const availableTowns = Array.from(new Set([
+    ...reports.map(report => report.nearest_town).filter(Boolean),
+    ...saFishingTowns
+  ])).sort()
 
   const filteredReports = reports.filter(report => {
     const locationMatch = selectedLocation === 'all' || report.nearest_town === selectedLocation
@@ -642,6 +710,7 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
                       value={selectedLocation}
                       onChange={(e) => setSelectedLocation(e.target.value)}
                       className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+                      style={{appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'white\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6,9 12,15 18,9\'%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '16px'}}
                     >
                       <option value="all">All Towns</option>
                       {availableTowns.map(town => (
@@ -681,7 +750,8 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
                 <div className="text-center">
                   <button 
                     onClick={() => setShowSubmitForm(true)}
-                    className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+                    className="px-6 py-3 text-white rounded-lg font-semibold transition-colors"
+                    style={{background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e293b 100%)'}}
                   >
                     📝 Submit Your Catch Report
                   </button>
@@ -768,7 +838,8 @@ const WhatsBitingModal = ({ isOpen, onClose }: WhatsBitingModalProps) => {
               <div className="flex justify-center">
                 <button
                   onClick={onClose}
-                  className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
+                  className="px-8 py-3 text-white rounded-lg font-semibold transition-colors"
+                  style={{background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e293b 100%)'}}
                 >
                   Return to Main Menu
                 </button>

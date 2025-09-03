@@ -62,7 +62,7 @@ body {
 /* Custom button animations - Mobile optimized */
 .feature-button {
   transition: all 0.3s ease;
-  background: linear-gradient(145deg, #dc2626, #b91c1c);
+  background: linear-gradient(145deg, #1e40af, #1e3a8a);
   border: 1px solid rgba(255, 255, 255, 0.1);
   min-height: var(--touch-target-min); /* 44px minimum touch target */
   min-width: var(--touch-target-min);

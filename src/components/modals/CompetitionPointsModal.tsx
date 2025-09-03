@@ -582,25 +582,25 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
           <div className="flex-1 overflow-y-auto overscroll-contain">
             <div className="space-y-6 pr-1">
               {/* Points Summary */}
-              <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-lg border border-yellow-500/50 p-6" style={{height: '250px'}}>
+              <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-lg border border-yellow-500/50 p-4" style={{height: '140px'}}>
                 <div className="flex flex-col h-full">
-                  <h3 className="text-xl font-bold text-white mb-4">📊 Competition Summary</h3>
+                  <h3 className="text-lg font-bold text-white mb-2">📊 Competition Summary</h3>
                   
                   <div className="flex-1 flex flex-col justify-center">
-                    <div className="grid grid-cols-2 gap-8 mb-6">
+                    <div className="grid grid-cols-2 gap-4 mb-3">
                       <div className="text-center">
-                        <div className="text-yellow-200 font-semibold mb-2">Total Points</div>
-                        <div className="text-white text-4xl font-bold">{totalPoints.toFixed(2)}</div>
+                        <div className="text-yellow-200 font-semibold mb-1 text-sm">Total Points</div>
+                        <div className="text-white text-2xl font-bold">{totalPoints.toFixed(2)}</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-yellow-200 font-semibold mb-2">Total Fish</div>
-                        <div className="text-white text-4xl font-bold">{totalFish}</div>
+                        <div className="text-yellow-200 font-semibold mb-1 text-sm">Total Fish</div>
+                        <div className="text-white text-2xl font-bold">{totalFish}</div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="text-center text-sm text-yellow-100">
-                    🎯 Edible species = 2x points | Non-edible species = 1x points
+                  <div className="text-center text-xs text-yellow-100">
+                    🎯 Edible = 2x points | Non-edible = 1x points
                   </div>
                 </div>
               </div>
@@ -616,9 +616,7 @@ const CompetitionPointsModal = ({ isOpen, onClose }: CompetitionPointsModalProps
                       {speciesData.length > 0 && speciesData.length < 50 && (
                         <span className="text-yellow-400 text-sm">📱 Offline Mode</span>
                       )}
-                      {speciesData.length >= 50 && (
-                        <span className="text-green-400 text-sm">✅ {speciesData.length} species loaded</span>
-                      )}
+
                     </div>
                   </div>
                 <div className="grid grid-cols-1 gap-4">
