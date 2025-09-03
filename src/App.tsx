@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import MainModal from './components/MainModal'
 import OnboardingFlow from './components/OnboardingFlow'
 import { setupGlobalErrorHandling, ErrorBoundary, logger } from './utils/logger'
+import { logVersionInfo, APP_VERSION } from './constants/version'
 import './App.css'
 
 function App() {
@@ -9,8 +10,37 @@ function App() {
 
   // Setup error logging and service worker
   useEffect(() => {
+    // Log app version for debugging
+    logVersionInfo()
+    
     // Setup global error handling
     setupGlobalErrorHandling()
+    
+    // Force-capture ALL JS failures (adapted for Vite/React)
+    if (typeof window !== "undefined") {
+      // Sync errors
+      window.addEventListener("error", (event) => {
+        console.error("⚠️ Global JS Error:", event.message, event.error)
+        logger.logError({
+          message: event.message,
+          stack: event.error?.stack,
+          url: event.filename,
+          errorType: 'JavaScript',
+          component: 'Global'
+        })
+      })
+
+      // Async errors
+      window.addEventListener("unhandledrejection", (event) => {
+        console.error("⚠️ Unhandled Promise:", event.reason)
+        logger.logError({
+          message: `Unhandled Promise Rejection: ${String(event.reason)}`,
+          stack: event.reason?.stack,
+          errorType: 'Promise',
+          component: 'Global'
+        })
+      })
+    }
     
     // Register service worker
     if ('serviceWorker' in navigator) {

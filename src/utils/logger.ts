@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import React from 'react'
+import { APP_VERSION } from '../constants/version'
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -15,6 +16,7 @@ export interface LogEntry {
   component?: string
   severity?: 'error' | 'warning' | 'info'
   userEmail?: string
+  appVersion?: string
 }
 
 export class Logger {
@@ -48,7 +50,8 @@ export class Logger {
         error_type: entry.errorType || 'JavaScript',
         component: entry.component || 'Unknown',
         severity: entry.severity || 'error',
-        user_email: this.userEmail || null
+        user_email: this.userEmail || null,
+        app_version: entry.appVersion || APP_VERSION
       }
 
       const { error } = await supabase
